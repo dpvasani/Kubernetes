@@ -469,12 +469,18 @@ code {
         POD2[🐳 Pods]
     end
     
-    API  KUBELET1
-    API  KUBELET2
-    API  ETCD
-    API  SCHED
-    API  CTRL
-    API  CCM
+    API <--> KUBELET1
+    API <--> KUBELET2
+    API <--> ETCD
+    API --> SCHED
+    API --> CTRL
+    API --> CCM
+    
+    KUBELET1 --> CRI1
+    KUBELET2 --> CRI2
+    CRI1 --> POD1
+    CRI2 --> POD2
+
 </div></code></pre>
 <h2 id="%F0%9F%8E%9B%EF%B8%8F-control-plane-components">🎛️ Control Plane Components</h2>
 <p>The <strong>Control Plane</strong> manages the overall state of the cluster. It consists of:[2][3]</p>
@@ -595,10 +601,11 @@ code {
 </ul>
 <h3 id="%F0%9F%90%B3-pods">🐳 Pods</h3>
 <pre><code class="language-mermaid"><div class="mermaid">graph TB
-    POD[🐳 Pod] --> CONTAINER[📦 Container(s)]
+    POD[🐳 Pod] --> CONTAINER[📦 Containers]
     POD --> NETWORK[🌐 Shared Network]
     POD --> STORAGE[💾 Shared Storage]
     POD --> IP[🏷️ Pod IP]
+
 </div></code></pre>
 <p><strong>Characteristics:</strong></p>
 <ul>
@@ -676,17 +683,18 @@ code {
         end
     end
 
-    API  ETCD
-    API  SCHED
-    API  CTRL
-    API  CCM
-    API  KUBELET1
-    API  KUBELET2
-    KUBELET1  CRI1
-    KUBELET2  CRI2
+    API --> ETCD
+    API --> SCHED
+    API --> CTRL
+    API --> CCM
+    API --> KUBELET1
+    API --> KUBELET2
+    KUBELET1 --> CRI1
+    KUBELET2 --> CRI2
     CRI1 --> POD1A
     CRI1 --> POD1B
     CRI2 --> POD2A
+
 </div></code></pre>
 <h3 id="%F0%9F%94%84-pod-lifecycle-flow">🔄 Pod Lifecycle Flow</h3>
 <pre><code class="language-mermaid"><div class="mermaid">graph LR
@@ -862,30 +870,6 @@ code {
 <li><strong>☁️ Deploy</strong> to cloud providers (EKS, GKE, AKS)</li>
 <li><strong>🔧 Master</strong> kubectl and YAML manifests</li>
 </ol>
-<p>Kubernetes continues to be the <strong>de facto standard</strong> for container orchestration, enabling organizations to build scalable, resilient, and portable applications in the cloud-native era.[2][3]</p>
-<p>[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/62888276/18255543-3118-4d7e-a119-a31107f18490/paste.txt
-[2] https://kubernetes.io/docs/concepts/architecture/
-[3] https://www.simform.com/blog/kubernetes-architecture/
-[4] https://devopscube.com/kubernetes-architecture-explained/
-[5] https://app.eraser.io/workspace/2GyNfNQs6bEl7WFlNzel
-[6] https://app.eraser.io/workspace/2G
-[7] https://k21academy.com/docker-kubernetes/kubernetes-architecture-components-overview-for-beginners/
-[8] https://creately.com/guides/kubernetes-architecture-diagram/
-[9] https://spot.io/resources/kubernetes-architecture/11-core-components-explained/
-[10] https://dev.to/vaibhav_ca0da2b8bef9b07c2/kubernetes-architecture-workernode-2ohk
-[11] https://www.clickittech.com/devops/kubernetes-architecture-diagram/
-[12] https://www.armosec.io/glossary/kubernetes-control-plane/
-[13] https://layer5.io/resources/kubernetes/kubernetes-architecture-101
-[14] https://cloudairy.com/blog/understanding-kubernetes-architecture-diagrams-and-components/
-[15] https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-architecture
-[16] https://cloudairy.com/template/kubernetes-architecture-diagram/
-[17] https://kubernetes.io/docs/contribute/style/diagram-guide/
-[18] https://spacelift.io/blog/kubernetes-architecture
-[19] https://kubernetes.io/docs/concepts/architecture/nodes/
-[20] https://www.eraser.io/ai/kubernetes-diagram-generator
-[21] https://dev.to/monarene/inside-the-kubernetes-control-plane-28ie
-[22] https://geekflare.com/devops/kubernetes-architecture/
-[23] https://kubernetes.io/docs/concepts/overview/components/</p>
 
 </body>
 </html>

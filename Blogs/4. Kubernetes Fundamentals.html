@@ -474,20 +474,21 @@ code {
 <pre><code class="language-mermaid"><div class="mermaid">timeline
     title 🌍 Global Application Support Challenges
     
-    section 🌅 Morning (Asia)
-        12:00 AM - 8:00 AM : 🇯🇵 Japan Team
-                          : 🇰🇷 Korea Team
-                          : 🇸🇬 Singapore Team
+    section 🌅 Morning Asia
+        Japan Team    : 🇯🇵 Primary support
+        Korea Team    : 🇰🇷 Secondary support  
+        Singapore Team: 🇸🇬 Regional coordination
     
-    section 🌞 Day (Europe)
-        8:00 AM - 4:00 PM  : 🇬🇧 UK Team
-                          : 🇩🇪 Germany Team
-                          : 🇫🇷 France Team
+    section 🌞 Day Europe  
+        UK Team      : 🇬🇧 Lead support
+        Germany Team : 🇩🇪 Technical escalation
+        France Team  : 🇫🇷 Customer relations
     
-    section 🌆 Evening (Americas)
-        4:00 PM - 12:00 AM : 🇺🇸 US Team
-                          : 🇨🇦 Canada Team
-                          : 🇧🇷 Brazil Team
+    section 🌆 Evening Americas
+        US Team     : 🇺🇸 Primary support
+        Canada Team : 🇨🇦 Backup support
+        Brazil Team : 🇧🇷 Latin America coverage
+
 </div></code></pre>
 <p><strong>Challenges:</strong></p>
 <ul>
@@ -854,24 +855,24 @@ code {
 <pre><code class="language-mermaid"><div class="mermaid">flowchart TD
     START([🚀 Start Assessment]) --> SCALE{📏 Application Scale?}
     
-    SCALE -->||10-50 containers| MEDIUM{🤔 Complexity Check}
-    SCALE -->|> 50 containers| COMPLEX[🎛️ Consider Kubernetes]
+    SCALE -->|"10–50 containers"| MEDIUM{🤔 Complexity Check}
+    SCALE -->|"> 50 containers"| COMPLEX[🎛️ Consider Kubernetes]
     
-    MEDIUM -->|Simple monolith| VPS[🖥️ Use VPS/VM]
-    MEDIUM -->|Microservices| K8S_MAYBE[🎯 Kubernetes candidate]
+    MEDIUM -->|"Simple monolith"| VPS[🖥️ Use VPS/VM]
+    MEDIUM -->|"Microservices"| K8S_MAYBE[🎯 Kubernetes candidate]
     
     K8S_MAYBE --> TEAM{👥 Team Skills?}
-    TEAM -->|Limited expertise| MANAGED[☁️ Managed Kubernetes]
-    TEAM -->|Strong DevOps| SELF_MANAGED[🔧 Self-managed K8s]
+    TEAM -->|"Limited expertise"| MANAGED[☁️ Managed Kubernetes]
+    TEAM -->|"Strong DevOps"| SELF_MANAGED[🔧 Self-managed K8s]
     
     COMPLEX --> BUDGET{💰 Budget Available?}
-    BUDGET -->|Limited| MANAGED
-    BUDGET -->|Adequate| ENTERPRISE[🏢 Enterprise Kubernetes]
+    BUDGET -->|"Limited"| MANAGED
+    BUDGET -->|"Adequate"| ENTERPRISE[🏢 Enterprise Kubernetes]
     
-    style SIMPLE fill:#90EE90
     style VPS fill:#87CEEB
     style MANAGED fill:#98FB98
     style ENTERPRISE fill:#DDA0DD
+
 </div></code></pre>
 <h3 id="%F0%9F%8E%AF-alternative-solutions">🎯 Alternative Solutions</h3>
 <h4 id="1-docker-compose-for-small-apps"><strong>1. Docker Compose for Small Apps</strong></h4>

@@ -739,29 +739,30 @@ docker <span class="hljs-built_in">exec</span> -it  /bin/sh
 docker inspect 
 </div></code></pre>
 <h3 id="%F0%9F%95%B5%EF%B8%8F-inside-container-exploration">🕵️ Inside Container Exploration</h3>
-<pre><code class="language-mermaid"><div class="mermaid">graph TB
-    CONTAINER[🐳 Running Container]
+<pre><code class="language-mermaid"><div class="mermaid">
+graph TB
+    CONTAINER["🐳 Running Container"]
     
     subgraph "📁 Container Filesystem"
-        ROOT[/ root directory]
-        USR[/usr]
-        SHARE[/usr/share]
-        NGINX[/usr/share/nginx]
-        HTML[/usr/share/nginx/html]
-        FILES[📄 Static Files]
+        ROOT["/"]
+        USR["/usr"]
+        SHARE["/usr/share"]
+        NGINX["/usr/share/nginx"]
+        HTML["/usr/share/nginx/html"]
+        FILES["📄 Static Files"]
         
         ROOT --> USR
-        USR --> SHARE
+        USR  --> SHARE
         SHARE --> NGINX
         NGINX --> HTML
         HTML --> FILES
     end
     
     subgraph "🔍 Inspection Commands"
-        LS[ls -la]
-        CAT[cat index.html]
-        PS[ps aux]
-        TOP[top]
+        LS["ls -la"]
+        CAT["cat index.html"]
+        PS["ps aux"]
+        TOP["top"]
     end
     
     CONTAINER --> ROOT
@@ -769,7 +770,9 @@ docker inspect
     FILES --> CAT
     
     style FILES fill:#90EE90
-    style HTML fill:#87CEEB
+    style HTML  fill:#87CEEB
+
+
 
 </div></code></pre>
 <h3 id="%F0%9F%9A%A8-common-issues-and-solutions">🚨 Common Issues and Solutions</h3>
@@ -969,26 +972,6 @@ docker build -t production-app .
 </ol>
 <p>Multi-stage builds represent a <strong>fundamental shift</strong> from monolithic container images to <strong>optimized, production-ready deployments</strong>. They embody the principle of &quot;build fat, ship thin&quot; - using all necessary tools during build time while delivering minimal, secure runtime images[3].</p>
 <p>Start implementing multi-stage builds in your projects today to unlock <strong>significant performance gains</strong> and <strong>security improvements</strong> in your containerized applications! 🚀</p>
-<p>[1] https://docs.docker.com/build/building/multi-stage/
-[2] https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/
-[3] https://docs.docker.com/build/building/best-practices/
-[4] https://docs.docker.com/guides/cpp/multistage/
-[5] https://dev.to/raunakgurud09/mastering-docker-multistage-builds-1e0m
-[6] https://dev.to/abhay_yt_52a8e72b213be229/streamline-your-docker-images-with-multi-stage-builds-340c
-[7] https://depot.dev/blog/docker-multi-stage-builds
-[8] https://dev.to/citrux-digital/understanding-docker-multistage-builds-3fm7
-[9] https://labs.iximiuz.com/tutorials/docker-multi-stage-builds
-[10] https://dev.to/kalkwst/multi-stage-dockerfiles-3e90
-[11] https://ruan.dev/blog/2022/07/31/docker-multistage-builds-for-hugo
-[12] https://www.cherryservers.com/blog/docker-multistage-build
-[13] https://github.com/patrickhoefler/dockerfilegraph
-[14] https://docs.docker.com/build/building/multi-platform/
-[15] https://overcast.blog/building-efficient-multi-stage-dockerfiles-for-production-055f34c4baed
-[16] https://learn.microsoft.com/en-us/dotnet/architecture/microservices/docker-application-development-process/docker-app-development-workflow
-[17] https://docs.docker.com/get-started/docker-concepts/building-images/writing-a-dockerfile/
-[18] https://earthly.dev/blog/docker-multistage/
-[19] https://blog.devgenius.io/docker-multi-stage-build-in-detail-3d7da2948797?gi=265baab36942
-[20] https://www.youtube.com/watch?v=ajetvJmBvFo</p>
 
 </body>
 </html>

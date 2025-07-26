@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>1. Kubernetes Series.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="certified-kubernetes-administrator-cka-2024-curriculum-%F0%9F%9A%80">Certified Kubernetes Administrator (CKA) 2024 Curriculum 🚀</h1>
+<p>This repository hosts notes, diagrams, assignments, and resources for the CKA course.</p>
+<p>✨ If you find this content helpful, please consider giving the repository a star! ⭐</p>
+<hr>
+<h2 id="%F0%9F%93%9A-course-outline">📚 Course Outline</h2>
+<p>Here's a breakdown of the CKA curriculum:</p>
+<h3 id="day-0-introduction-to-the-series-%F0%9F%8C%9F">Day 0: Introduction to the Series 🌟</h3>
+<ul>
+<li>Course Introduction</li>
+<li>Overview of the #40daysofkubernetes challenge</li>
+</ul>
+<h3 id="day-1-docker-fundamentals-%F0%9F%90%B3">Day 1: Docker Fundamentals 🐳</h3>
+<ul>
+<li>What is Docker?</li>
+<li>Docker vs. Virtual Machines</li>
+<li>Docker Architecture</li>
+<li>Docker Flow</li>
+<li>Essential Docker commands</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day01">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-2-dockerize-an-application-%F0%9F%9B%A0%EF%B8%8F">Day 2: Dockerize an Application 🛠️</h3>
+<ul>
+<li>Understanding Dockerfile and how to write it</li>
+<li><code>docker pull</code>, <code>push</code>, <code>tag</code> commands, and more</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day02">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-3-docker-multi-stage-builds-%F0%9F%8F%97%EF%B8%8F">Day 3: Docker Multi-Stage Builds 🏗️</h3>
+<ul>
+<li>How to write a Dockerfile for multi-stage builds</li>
+<li>Benefits of multi-stage builds</li>
+<li>Other Docker best practices</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day03">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-4-why-do-we-need-kubernetes-%F0%9F%A4%94">Day 4: Why do We need Kubernetes? 🤔</h3>
+<ul>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day04">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-5-kubernetes-architecture-%F0%9F%A7%A0">Day 5: Kubernetes Architecture 🧠</h3>
+<ul>
+<li>Control Plane vs. Worker Nodes</li>
+<li>Overview of Control Plane components</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day05">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-6-install-kubernetes-cluster-locally-%F0%9F%92%BB">Day 6: Install Kubernetes Cluster Locally 💻</h3>
+<ul>
+<li>Installing a Kind cluster locally</li>
+<li>How to access the cluster</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day06">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-7-pods-in-kubernetes-%F0%9F%93%A6">Day 7: Pods in Kubernetes 📦</h3>
+<ul>
+<li>What are pods in Kubernetes?</li>
+<li>Containers vs. Pods</li>
+<li>Imperative vs. Declarative way for creating Kubernetes resources</li>
+<li>Creating a sample pod using imperative and declarative methods</li>
+<li>Inspecting pods</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day07">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-8-replicasets-and-deployments-in-kubernetes-%F0%9F%94%84">Day 8: Replicasets and Deployments in Kubernetes 🔄</h3>
+<ul>
+<li>Replication Controller</li>
+<li>ReplicaSet</li>
+<li>Deployments</li>
+<li>Performing Rolling updates/rollbacks</li>
+<li>Scaling deployments</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day08">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-9-services-in-kubernetes-%F0%9F%8C%90">Day 9: Services in Kubernetes 🌐</h3>
+<ul>
+<li>What are services in Kubernetes, and why are they needed?</li>
+<li>NodePort, ClusterIP, and LoadBalancer service types</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day09">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-10-namespaces-%F0%9F%8F%B7%EF%B8%8F">Day 10: Namespaces 🏷️</h3>
+<ul>
+<li>Understanding Namespaces</li>
+<li>Services and namespaces interaction</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day10">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-11-multi-container-pods-%F0%9F%A7%A9">Day 11: Multi-container Pods 🧩</h3>
+<ul>
+<li>What are multi-container pods?</li>
+<li>Multi-container pod patterns - sidecar/init, etc.</li>
+<li>Environment variables in Kubernetes</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day11">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-12-daemonset-cronjob-and-job-%E2%8F%B0">Day 12: Daemonset, CronJob, and Job ⏰</h3>
+<ul>
+<li>What are Daemonset, CronJobs, and Jobs?</li>
+<li>Cron fundamentals with examples</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day12">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-13-static-pods-%F0%9F%A7%8A">Day 13: Static Pods 🧊</h3>
+<ul>
+<li>What are static pods?</li>
+<li>Labels and selectors</li>
+<li>Manual Scheduling</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day13">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-14-taints-and-tolerations-%F0%9F%9A%AB">Day 14: Taints and Tolerations 🚫</h3>
+<ul>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day14">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-15-node-affinity-%F0%9F%A4%9D">Day 15: Node Affinity 🤝</h3>
+<ul>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day15">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-16-resource-requests-and-limits-%F0%9F%93%8A">Day 16: Resource Requests and Limits 📊</h3>
+<ul>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day16">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-17-autoscaling-in-kubernetes-%F0%9F%93%88">Day 17: Autoscaling in Kubernetes 📈</h3>
+<ul>
+<li>Horizontal vs. Vertical Autoscaling</li>
+<li>HPA, VPA, Cluster Autoscaling, NAP</li>
+<li>Metrics server</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day17">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-18-probes-in-kubernetes-%E2%9D%A4%EF%B8%8F%E2%80%8D%F0%9F%A9%B9">Day 18: Probes in Kubernetes ❤️‍🩹</h3>
+<ul>
+<li>Liveness vs. Readiness Probes</li>
+<li>HTTP/TCP/Command-based health checks</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day18">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-19-config-maps-and-secrets-%F0%9F%94%91">Day 19: Config Maps and Secrets 🔑</h3>
+<ul>
+<li>Concept and demo of ConfigMaps and Secrets</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day19">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-20-how-ssltls-works-%F0%9F%94%92">Day 20: How SSL/TLS Works 🔒</h3>
+<ul>
+<li>Symmetric vs. Asymmetric encryption</li>
+<li>SSL certificates and Certificate Authority</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day20">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-21-tls-in-kubernetes-%F0%9F%94%90">Day 21: TLS in Kubernetes 🔐</h3>
+<ul>
+<li>How TLS works in Kubernetes</li>
+<li>Why TLS is needed in Kubernetes</li>
+<li>Private key and public certificates</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day21">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-22-authorization-in-kubernetes-%F0%9F%9A%A6">Day 22: Authorization in Kubernetes 🚦</h3>
+<ul>
+<li>Authorization vs. Authentication</li>
+<li>Authorization types: ABAC, RBAC, Node, Webhook</li>
+<li>Kubeconfig</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day22">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-23-role-based-access-control-rbac-%F0%9F%9B%A1%EF%B8%8F">Day 23: Role-Based Access Control (RBAC) 🛡️</h3>
+<ul>
+<li>Role and RoleBinding</li>
+<li>Generating and approving certificates</li>
+<li>Granting access to users</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day23">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-24-cluster-role-and-cluster-role-binding-%F0%9F%91%91">Day 24: Cluster Role and Cluster Role Binding 👑</h3>
+<ul>
+<li>Concept and demo</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day24">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-25-service-account-%F0%9F%91%A4">Day 25: Service Account 👤</h3>
+<ul>
+<li>What are Service Accounts, and why are they used?</li>
+<li>Creating a Service Account and granting access</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day25">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-26-network-policies-%F0%9F%9A%A7">Day 26: Network Policies 🚧</h3>
+<ul>
+<li>Network Policy concept</li>
+<li>CNI installation</li>
+<li>Enforcing network policy by creating the object</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day26">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-27-use-kubeadm-to-install-a-kubernetes-cluster-%F0%9F%9A%80">Day 27: Use Kubeadm to Install a Kubernetes Cluster 🚀</h3>
+<ul>
+<li>Provisioning underlying infrastructure for Kubernetes cluster deployment</li>
+<li>Setting up Master Node for Kubernetes components</li>
+<li>Setting up multiple worker nodes and joining them to the master</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day27">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-28-docker-storage-fundamentals-%F0%9F%92%BE">Day 28: Docker Storage Fundamentals 💾</h3>
+<ul>
+<li>Why storage is needed in Docker containers</li>
+<li>Persistent Docker storage</li>
+<li><a href="https://github.com/piyushsachdeva/CKA-2024/tree/main/Resources/Day28">Notes &amp; Useful Links</a> ✅</li>
+</ul>
+<h3 id="day-29-storage-in-kubernetes-%F0%9F%97%84%EF%B8%8F">Day 29: Storage in Kubernetes 🗄️</h3>
+<ul>
+<li>How storage works in Kubernetes</li>
+<li>HostPath volumes in Kubernetes</li>
+<li>Persistent Volumes and Persistent Volume Claims</li>
+<li>Volume modes, Access modes, and reclaim policies for volumes</li>
+<li>Storage classes and provisions</li>
+</ul>
+<h3 id="day-30-how-dns-works-%F0%9F%97%BA%EF%B8%8F">Day 30: How DNS Works? 🗺️</h3>
+<ul>
+<li>What happens when you type a website address in your browser</li>
+<li>Different components involved in DNS</li>
+<li>End-to-end flow</li>
+<li>Important files and resources</li>
+</ul>
+<h3 id="day-31-dns-in-kubernetes-%F0%9F%94%8D">Day 31: DNS in Kubernetes 🔍</h3>
+<ul>
+<li>How DNS works in Kubernetes</li>
+<li>CoreDNS</li>
+</ul>
+<h3 id="day-32-kubernetes-networking-%F0%9F%95%B8%EF%B8%8F">Day 32: Kubernetes Networking 🕸️</h3>
+<ul>
+<li>CNI, Network Add-on</li>
+<li>Containerd vs. runc, container runtime</li>
+</ul>
+<h3 id="day-33-ingress-controller-and-ingress-resources-%F0%9F%9A%AA">Day 33: Ingress Controller and Ingress Resources 🚪</h3>
+<h3 id="day-34-perform-a-version-upgrade-on-a-kubernetes-cluster-using-kubeadm-%E2%AC%86%EF%B8%8F">Day 34: Perform a Version Upgrade on a Kubernetes Cluster using Kubeadm ⬆️</h3>
+<h3 id="day-35-implement-etcd-backup-and-restore-%F0%9F%92%BE">Day 35: Implement etcd Backup and Restore 💾</h3>
+<h3 id="day-36-monitoring-logging-and-alerting-%F0%9F%93%88">Day 36: Monitoring, Logging, and Alerting 📈</h3>
+<ul>
+<li>Monitoring cluster components</li>
+<li>Evaluating cluster and node logging</li>
+<li>Understanding how to monitor applications, Metric Server</li>
+<li>Managing container stdout &amp; stderr logs</li>
+</ul>
+<h3 id="day-37-troubleshoot-application-failure-%F0%9F%90%9E">Day 37: Troubleshoot Application Failure 🐞</h3>
+<h3 id="day-38-troubleshoot-cluster-component-failure-%F0%9F%92%A5">Day 38: Troubleshoot Cluster Component Failure 💥</h3>
+<h3 id="day-39-network-troubleshooting-%F0%9F%93%A1">Day 39: Network Troubleshooting 📡</h3>
+<ul>
+<li>Worker node failure</li>
+<li>Cordon, uncordon, and drain (maintenance)</li>
+</ul>
+<h3 id="day-40-jsonpath-advanced-kubectl-commands-%E2%9C%8D%EF%B8%8F">Day 40: JSONPath, Advanced Kubectl Commands ✍️</h3>
+<ul>
+<li>JSON for beginners</li>
+<li>JSON vs. YAML</li>
+<li>JSONPath basics</li>
+<li>Multiple JSONPath queries to fetch details</li>
+</ul>
+<h3 id="day-41-mission-cka-%F0%9F%8E%AF">Day 41: Mission CKA 🎯</h3>
+<ul>
+<li>Exam Pattern</li>
+<li>Pre-requisites</li>
+<li>Last-minute preparation</li>
+<li>Tips and Tricks</li>
+<li>Sample questions</li>
+</ul>
+<h3 id="day-42-realtime-project-host-your-own-container-registry-on-kubernetes-%F0%9F%8C%9F">Day 42: Realtime Project: Host your own container registry on Kubernetes 🌟</h3>
+<ul>
+<li>This project will include multiple Kubernetes topics with real-time implementation.</li>
+</ul>
+<h3 id="day-43-helm-%E2%9B%91%EF%B8%8F">Day 43: Helm ⛑️</h3>
+<h3 id="day-44-kustomize-%F0%9F%8E%A8">Day 44: Kustomize 🎨</h3>
+<h3 id="day-45-statefulsets-%F0%9F%94%84">Day 45: StatefulSets 🔄</h3>
+<h3 id="day-46-priority-class-and-preemption-%F0%9F%9A%80">Day 46: Priority Class and Preemption 🚀</h3>
+
+</body>
+</html>
