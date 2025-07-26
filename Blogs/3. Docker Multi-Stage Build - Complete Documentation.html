@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>3. Docker Multi-Stage Build - Complete Documentation.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="%F0%9F%90%B3-docker-multi-stage-build---complete-documentation">🐳 Docker Multi-Stage Build - Complete Documentation</h1>
+<h2 id="%F0%9F%93%8B-table-of-contents">📋 Table of Contents</h2>
+<ul>
+<li><a href="#what-is-docker-multi-stage-build">🎯 What is Docker Multi-Stage Build?</a></li>
+<li><a href="#why-use-multi-stage-builds">🚀 Why Use Multi-Stage Builds?</a></li>
+<li><a href="#how-multi-stage-builds-work">🏗️ How Multi-Stage Builds Work</a></li>
+<li><a href="#step-by-step-tutorial">📦 Step-by-Step Tutorial</a></li>
+<li><a href="#multi-stage-build-workflow">🔄 Multi-Stage Build Workflow</a></li>
+<li><a href="#architecture-diagrams">📊 Architecture Diagrams</a></li>
+<li><a href="#commands-and-best-practices">🛠️ Commands and Best Practices</a></li>
+<li><a href="#performance-comparison">⚡ Performance Comparison</a></li>
+<li><a href="#debugging-and-troubleshooting">🔧 Debugging and Troubleshooting</a></li>
+<li><a href="#best-practices">✨ Best Practices</a></li>
+</ul>
+<h2 id="%F0%9F%8E%AF-what-is-docker-multi-stage-build">🎯 What is Docker Multi-Stage Build?</h2>
+<p><strong>Docker Multi-Stage Build</strong> is a powerful feature that allows you to use multiple <code>FROM</code> statements in a single Dockerfile[1]. Each <code>FROM</code> instruction creates a new stage in the build process, enabling you to <strong>optimize image size</strong> and <strong>improve security</strong> by separating build dependencies from runtime requirements[2].</p>
+<h3 id="%F0%9F%94%A4-key-concepts">🔤 Key Concepts</h3>
+<ul>
+<li>🏗️ <strong>Multiple Stages</strong>: Each stage has its own base image and purpose</li>
+<li>📦 <strong>Selective Copying</strong>: Copy only necessary artifacts between stages</li>
+<li>🗑️ <strong>Artifact Exclusion</strong>: Build tools and dependencies are left behind</li>
+<li>🎯 <strong>Production-Ready</strong>: Final image contains only runtime requirements</li>
+</ul>
+<h2 id="%F0%9F%9A%80-why-use-multi-stage-builds">🚀 Why Use Multi-Stage Builds?</h2>
+<p>Multi-stage builds solve several critical problems in containerized application development[3]:</p>
+<table>
+<thead>
+<tr>
+<th>🎯 Benefit</th>
+<th>📋 Description</th>
+<th>💡 Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>📉 Smaller Image Size</strong></td>
+<td>Excludes build tools and dependencies from final image</td>
+<td>🚀 <strong>Faster deployments</strong></td>
+</tr>
+<tr>
+<td><strong>🔒 Enhanced Security</strong></td>
+<td>Reduces attack surface by removing unnecessary components</td>
+<td>🛡️ <strong>Lower vulnerability risk</strong></td>
+</tr>
+<tr>
+<td><strong>⚡ Better Performance</strong></td>
+<td>Lighter images load and start faster</td>
+<td>🏃 <strong>Improved runtime speed</strong></td>
+</tr>
+<tr>
+<td><strong>🧹 Cleaner Workflow</strong></td>
+<td>Single Dockerfile for entire build process</td>
+<td>🛠️ <strong>Simplified maintenance</strong></td>
+</tr>
+<tr>
+<td><strong>💰 Cost Optimization</strong></td>
+<td>Reduced storage and bandwidth usage</td>
+<td>💵 <strong>Lower infrastructure costs</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="%F0%9F%8F%97%EF%B8%8F-how-multi-stage-builds-work">🏗️ How Multi-Stage Builds Work</h2>
+<h3 id="%F0%9F%94%8D-single-stage-vs-multi-stage-comparison">🔍 Single-Stage vs Multi-Stage Comparison</h3>
+<pre><code class="language-mermaid"><div class="mermaid">graph TB
+    subgraph "❌ Single-Stage Build Problems"
+        SINGLE[📦 Single Stage]
+        SINGLE --> BUILD_TOOLS[🔧 Build Tools]
+        SINGLE --> SOURCE[📄 Source Code]
+        SINGLE --> DEPS[📚 All Dependencies]
+        SINGLE --> ARTIFACTS[⚡ Build Artifacts]
+        SINGLE --> FINAL1[📦 Final Image: 200MB+]
+    end
+    
+    subgraph "✅ Multi-Stage Build Solution"
+        STAGE1[🏗️ Build Stage]
+        STAGE2[🚀 Runtime Stage]
+        
+        STAGE1 --> BUILD_TOOLS2[🔧 Build Tools]
+        STAGE1 --> SOURCE2[📄 Source Code]  
+        STAGE1 --> BUILD_DEPS[📚 Build Dependencies]
+        STAGE1 --> COMPILE[⚙️ Compile/Build]
+        
+        STAGE2 --> RUNTIME_BASE[🏃 Runtime Base Image]
+        STAGE2 --> COPY_ARTIFACTS[📋 Copy Build Artifacts]
+        STAGE2 --> FINAL2[📦 Final Image: 50MB]
+        
+        COMPILE -.->|Copy Only Artifacts| COPY_ARTIFACTS
+    end
+</div></code></pre>
+<h3 id="%F0%9F%94%84-build-process-flow">🔄 Build Process Flow</h3>
+<pre><code class="language-mermaid"><div class="mermaid">sequenceDiagram
+    participant User as 👤 Developer
+    participant Docker as 🐳 Docker Engine
+    participant Stage1 as 🏗️ Build Stage (installer)
+    participant Stage2 as 🚀 Runtime Stage (deployer)
+    participant Registry as 📦 Image Registry
+
+    User->>Docker: docker build -t multistage .
+    Docker->>Stage1: FROM node:18-alpine AS installer
+    Stage1->>Stage1: WORKDIR /app
+    Stage1->>Stage1: COPY package*.json ./
+    Stage1->>Stage1: RUN npm install
+    Stage1->>Stage1: COPY . .
+    Stage1->>Stage1: RUN npm run build
+    
+    Docker->>Stage2: FROM nginx:latest AS deployer
+    Stage2->>Stage1: COPY --from=installer /app/build /usr/share/nginx/html
+    
+    Docker->>User: 📦 Optimized Image Ready (50MB)
+    User->>Registry: docker push multistage
+</div></code></pre>
+<h2 id="%F0%9F%93%A6-step-by-step-tutorial">📦 Step-by-Step Tutorial</h2>
+<h3 id="%F0%9F%9B%A0%EF%B8%8F-project-setup">🛠️ Project Setup</h3>
+<p><strong>1. Clone the Application</strong></p>
+<pre class="hljs"><code><div>git <span class="hljs-built_in">clone</span> 
+<span class="hljs-built_in">cd</span> react-app-docker
+ls  <span class="hljs-comment"># Check project structure</span>
+</div></code></pre>
+<p><strong>Project Structure:</strong></p>
+<pre class="hljs"><code><div>react-app-docker/
+├── src/
+├── public/
+├── package.json
+├── package-lock.json
+└── README.md
+</div></code></pre>
+<h3 id="%F0%9F%93%9D-creating-multi-stage-dockerfile">📝 Creating Multi-Stage Dockerfile</h3>
+<p><strong>2. Create Dockerfile</strong></p>
+<pre class="hljs"><code><div>touch Dockerfile
+vi Dockerfile
+</div></code></pre>
+<p><strong>3. Multi-Stage Dockerfile Content</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment"># 🏗️ Stage 1: Build Stage (installer)</span>
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span>-alpine AS installer
+<span class="hljs-keyword">WORKDIR</span><span class="bash"> /app</span>
+
+<span class="hljs-comment"># Copy package files for dependency installation</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> package*.json ./</span>
+
+<span class="hljs-comment"># Install all dependencies (including devDependencies)</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm install</span>
+
+<span class="hljs-comment"># Copy source code</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> . .</span>
+
+<span class="hljs-comment"># Build the application</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm run build</span>
+
+<span class="hljs-comment"># 🚀 Stage 2: Runtime Stage (deployer)</span>
+<span class="hljs-keyword">FROM</span> nginx:latest AS deployer
+
+<span class="hljs-comment"># Copy only build artifacts from previous stage</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> --from=installer /app/build /usr/share/nginx/html</span>
+
+<span class="hljs-comment"># Nginx will serve the static files</span>
+<span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<h3 id="%F0%9F%94%A7-build-process">🔧 Build Process</h3>
+<p><strong>4. Build the Multi-Stage Image</strong></p>
+<pre class="hljs"><code><div>docker build -t multistage .
+</div></code></pre>
+<h3 id="%F0%9F%93%8A-build-output-analysis">📊 Build Output Analysis</h3>
+<pre><code class="language-mermaid"><div class="mermaid">graph LR
+    subgraph "🏗️ Build Stage Process"
+        A[📄 package.json] --> B[📦 npm install]
+        C[📁 Source Code] --> B
+        B --> D[⚙️ npm run build]
+        D --> E[📁 /app/build]
+    end
+    
+    subgraph "🚀 Runtime Stage Process"
+        F[🌐 nginx:latest] --> G[📋 Copy build artifacts]
+        E -.->|COPY --from=installer| G
+        G --> H[🎯 Final Image]
+    end
+    
+    style E fill:#90EE90
+    style H fill:#87CEEB
+</div></code></pre>
+<h2 id="%F0%9F%94%84-multi-stage-build-workflow">🔄 Multi-Stage Build Workflow</h2>
+<h3 id="%F0%9F%8E%AF-complete-workflow-diagram">🎯 Complete Workflow Diagram</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    START([🚀 Start Build Process]) --> STAGE1{🏗️ Build Stage}
+    
+    STAGE1 --> NODE[📦 FROM node:18-alpine AS installer]
+    NODE --> WORKDIR[📁 WORKDIR /app]
+    WORKDIR --> COPY_PKG[📋 COPY package*.json ./]
+    COPY_PKG --> NPM_INSTALL[⬇️ RUN npm install]
+    NPM_INSTALL --> COPY_SRC[📄 COPY . .]
+    COPY_SRC --> NPM_BUILD[⚙️ RUN npm run build]
+    
+    NPM_BUILD --> STAGE2{🚀 Runtime Stage}
+    
+    STAGE2 --> NGINX[🌐 FROM nginx:latest AS deployer]
+    NGINX --> COPY_BUILD[📋 COPY --from=installer /app/build /usr/share/nginx/html]
+    COPY_BUILD --> FINAL[✨ Optimized Final Image]
+    
+    FINAL --> SIZE_CHECK{📏 Size Check}
+    SIZE_CHECK -->|Before: 200MB+| BEFORE[❌ Single Stage: Bloated]
+    SIZE_CHECK -->|After: ~50MB| AFTER[✅ Multi-Stage: Optimized]
+    
+    style STAGE1 fill:#FFE4B5
+    style STAGE2 fill:#E0FFFF
+    style FINAL fill:#90EE90
+    style AFTER fill:#98FB98
+</div></code></pre>
+<h3 id="%F0%9F%94%8D-stage-dependency-graph">🔍 Stage Dependency Graph</h3>
+<pre><code class="language-mermaid"><div class="mermaid">graph TB
+    subgraph "📦 Base Images"
+        NODE18[🟢 node:18-alpine]
+        NGINX[🔵 nginx:latest]
+    end
+    
+    subgraph "🏗️ Build Stage (installer)"
+        INSTALLER[installer stage]
+        BUILD_DEPS[📚 Build Dependencies]
+        SOURCE_CODE[📄 Source Code]
+        BUILD_ARTIFACTS[⚡ Build Artifacts]
+        
+        NODE18 --> INSTALLER
+        INSTALLER --> BUILD_DEPS
+        INSTALLER --> SOURCE_CODE
+        BUILD_DEPS --> BUILD_ARTIFACTS
+        SOURCE_CODE --> BUILD_ARTIFACTS
+    end
+    
+    subgraph "🚀 Runtime Stage (deployer)"
+        DEPLOYER[deployer stage]
+        STATIC_FILES[📁 Static Files Only]
+        
+        NGINX --> DEPLOYER
+        BUILD_ARTIFACTS -.->|COPY --from=installer| DEPLOYER
+        DEPLOYER --> STATIC_FILES
+    end
+    
+    subgraph "🗑️ Excluded from Final Image"
+        EXCLUDED[❌ node_modules❌ Source code❌ Build tools❌ Dev dependencies]
+    end
+    
+    style BUILD_ARTIFACTS fill:#90EE90
+    style STATIC_FILES fill:#87CEEB
+    style EXCLUDED fill:#FFB6C1
+</div></code></pre>
+<h2 id="%F0%9F%9B%A0%EF%B8%8F-commands-and-best-practices">🛠️ Commands and Best Practices</h2>
+<h3 id="%F0%9F%94%A7-essential-docker-commands">🔧 Essential Docker Commands</h3>
+<h4 id="build-commands"><strong>Build Commands</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Build multi-stage image</span>
+docker build -t multistage .
+
+<span class="hljs-comment"># Build with specific target stage</span>
+docker build --target installer -t build-stage .
+
+<span class="hljs-comment"># Build with build arguments</span>
+docker build --build-arg NODE_VERSION=18 -t multistage .
+</div></code></pre>
+<h4 id="image-management"><strong>Image Management</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># List all images</span>
+docker images
+
+<span class="hljs-comment"># Remove specific image</span>
+docker image rm multistage
+
+<span class="hljs-comment"># Remove dangling images</span>
+docker image prune
+
+<span class="hljs-comment"># Check image size</span>
+docker images --format <span class="hljs-string">"table {{.Repository}}\t{{.Tag}}\t{{.Size}}"</span>
+</div></code></pre>
+<h4 id="container-operations"><strong>Container Operations</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Run container</span>
+docker run -d -p 3000:80 --name app-container multistage
+
+<span class="hljs-comment"># Check running containers</span>
+docker ps
+
+<span class="hljs-comment"># View container logs</span>
+docker logs 
+
+<span class="hljs-comment"># Execute commands in container</span>
+docker <span class="hljs-built_in">exec</span> -it  /bin/sh
+</div></code></pre>
+<h3 id="%F0%9F%94%8D-debugging-and-inspection-commands">🔍 Debugging and Inspection Commands</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Inspect container configuration</span>
+docker inspect 
+
+<span class="hljs-comment"># Check container filesystem</span>
+docker <span class="hljs-built_in">exec</span> -it  ls -la /usr/share/nginx/html
+
+<span class="hljs-comment"># Monitor container resource usage</span>
+docker stats 
+
+<span class="hljs-comment"># View container port mappings</span>
+docker port 
+</div></code></pre>
+<h2 id="%F0%9F%93%8A-performance-comparison">📊 Performance Comparison</h2>
+<h3 id="%F0%9F%93%8F-size-comparison">📏 Size Comparison</h3>
+<pre><code class="language-mermaid"><div class="mermaid">graph LR
+    subgraph "📊 Image Size Comparison"
+        SINGLE[❌ Single-Stage200MB+]
+        MULTI[✅ Multi-Stage~50MB]
+        
+        SINGLE --> REDUCTION[75% Size Reduction]
+        REDUCTION --> MULTI
+    end
+    
+    subgraph "⚡ Performance Impact"
+        FASTER[🚀 3x Faster Pull]
+        SECURE[🔒 Lower Attack Surface]
+        COST[💰 Reduced Storage Cost]
+    end
+    
+    MULTI --> FASTER
+    MULTI --> SECURE
+    MULTI --> COST
+    
+    style SINGLE fill:#FFB6C1
+    style MULTI fill:#90EE90
+    style REDUCTION fill:#FFD700
+</div></code></pre>
+<h3 id="%F0%9F%93%88-benefits-breakdown">📈 Benefits Breakdown</h3>
+<table>
+<thead>
+<tr>
+<th>📊 Metric</th>
+<th>🔴 Single-Stage</th>
+<th>🟢 Multi-Stage</th>
+<th>📈 Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>📦 Image Size</strong></td>
+<td>200MB+</td>
+<td>~50MB</td>
+<td><strong>75% reduction</strong></td>
+</tr>
+<tr>
+<td><strong>⬇️ Pull Time</strong></td>
+<td>30 seconds</td>
+<td>10 seconds</td>
+<td><strong>3x faster</strong></td>
+</tr>
+<tr>
+<td><strong>🚀 Startup Time</strong></td>
+<td>15 seconds</td>
+<td>8 seconds</td>
+<td><strong>2x faster</strong></td>
+</tr>
+<tr>
+<td><strong>🔒 Security Vulnerabilities</strong></td>
+<td>High</td>
+<td>Low</td>
+<td><strong>60% fewer</strong></td>
+</tr>
+<tr>
+<td><strong>💾 Storage Cost</strong></td>
+<td>High</td>
+<td>Low</td>
+<td><strong>75% savings</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="%F0%9F%94%A7-debugging-and-troubleshooting">🔧 Debugging and Troubleshooting</h2>
+<h3 id="%F0%9F%94%8D-container-investigation-commands">🔍 Container Investigation Commands</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Check container logs</span>
+docker logs 
+
+<span class="hljs-comment"># Access container shell</span>
+docker <span class="hljs-built_in">exec</span> -it  /bin/sh
+
+<span class="hljs-comment"># Inspect container details</span>
+docker inspect 
+</div></code></pre>
+<h3 id="%F0%9F%95%B5%EF%B8%8F-inside-container-exploration">🕵️ Inside Container Exploration</h3>
+<pre><code class="language-mermaid"><div class="mermaid">graph TB
+    CONTAINER[🐳 Running Container]
+    
+    subgraph "📁 Container Filesystem"
+        ROOT[/ root directory]
+        USR[/usr]
+        SHARE[/usr/share]
+        NGINX[/usr/share/nginx]
+        HTML[/usr/share/nginx/html]
+        FILES[📄 Static Files]
+        
+        ROOT --> USR
+        USR --> SHARE
+        SHARE --> NGINX
+        NGINX --> HTML
+        HTML --> FILES
+    end
+    
+    subgraph "🔍 Inspection Commands"
+        LS[ls -la]
+        CAT[cat index.html]
+        PS[ps aux]
+        TOP[top]
+    end
+    
+    CONTAINER --> ROOT
+    FILES --> LS
+    FILES --> CAT
+    
+    style FILES fill:#90EE90
+    style HTML fill:#87CEEB
+
+</div></code></pre>
+<h3 id="%F0%9F%9A%A8-common-issues-and-solutions">🚨 Common Issues and Solutions</h3>
+<table>
+<thead>
+<tr>
+<th>❌ Problem</th>
+<th>🔍 Symptom</th>
+<th>✅ Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Build fails</strong></td>
+<td><code>unknown instruction WORKDIR</code></td>
+<td>Check Dockerfile syntax</td>
+</tr>
+<tr>
+<td><strong>Large image size</strong></td>
+<td>Image still 200MB+</td>
+<td>Verify multi-stage is working</td>
+</tr>
+<tr>
+<td><strong>Container won't start</strong></td>
+<td>Exit code 125</td>
+<td>Check port conflicts</td>
+</tr>
+<tr>
+<td><strong>Files not found</strong></td>
+<td>404 errors</td>
+<td>Verify COPY paths</td>
+</tr>
+<tr>
+<td><strong>Permission issues</strong></td>
+<td>Access denied</td>
+<td>Use non-root user</td>
+</tr>
+</tbody>
+</table>
+<h2 id="%E2%9C%A8-best-practices">✨ Best Practices</h2>
+<h3 id="%F0%9F%8E%AF-multi-stage-build-best-practices">🎯 Multi-Stage Build Best Practices</h3>
+<h4 id="1-%F0%9F%8F%B7%EF%B8%8F-use-named-stages"><strong>1. 🏷️ Use Named Stages</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># ✅ Good: Named stages</span>
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span>-alpine AS installer
+<span class="hljs-keyword">FROM</span> nginx:latest AS deployer
+
+<span class="hljs-comment"># ❌ Bad: Unnamed stages</span>
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span>-alpine
+<span class="hljs-keyword">FROM</span> nginx:latest
+</div></code></pre>
+<h4 id="2-%F0%9F%93%A6-choose-optimal-base-images"><strong>2. 📦 Choose Optimal Base Images</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># ✅ Good: Lightweight base images</span>
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span>-alpine AS installer    <span class="hljs-comment"># Small Alpine-based</span>
+<span class="hljs-keyword">FROM</span> nginx:alpine AS deployer       <span class="hljs-comment"># Lightweight nginx</span>
+
+<span class="hljs-comment"># ❌ Bad: Heavy base images  </span>
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span> AS installer           <span class="hljs-comment"># Ubuntu-based (larger)</span>
+<span class="hljs-keyword">FROM</span> nginx:latest AS deployer       <span class="hljs-comment"># Full nginx image</span>
+</div></code></pre>
+<h4 id="3-%F0%9F%8E%AF-copy-only-whats-needed"><strong>3. 🎯 Copy Only What's Needed</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># ✅ Good: Selective copying</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> --from=installer /app/build /usr/share/nginx/html</span>
+
+<span class="hljs-comment"># ❌ Bad: Copying everything</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> --from=installer /app /usr/share/nginx/html</span>
+</div></code></pre>
+<h4 id="4-%F0%9F%93%8B-optimize-layer-caching"><strong>4. 📋 Optimize Layer Caching</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># ✅ Good: Copy package files first</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> package*.json ./</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm install</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> . .</span>
+
+<span class="hljs-comment"># ❌ Bad: Copy everything first</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> . .</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm install</span>
+</div></code></pre>
+<h3 id="%F0%9F%94%92-security-best-practices">🔒 Security Best Practices</h3>
+<h4 id="5-%F0%9F%91%A4-use-non-root-user"><strong>5. 👤 Use Non-Root User</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># ✅ Good: Non-root user</span>
+<span class="hljs-keyword">FROM</span> nginx:alpine AS deployer
+<span class="hljs-keyword">RUN</span><span class="bash"> addgroup -g 1001 -S nodejs</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> adduser -S nextjs -u 1001</span>
+<span class="hljs-keyword">USER</span> nextjs
+
+<span class="hljs-comment"># ❌ Bad: Running as root (default)</span>
+<span class="hljs-keyword">FROM</span> nginx:alpine AS deployer
+<span class="hljs-comment"># No user specified - runs as root</span>
+</div></code></pre>
+<h4 id="6-%F0%9F%97%91%EF%B8%8F-remove-unnecessary-packages"><strong>6. 🗑️ Remove Unnecessary Packages</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># ✅ Good: Clean up after installation</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> apt-get update &amp;&amp; apt-get install -y \
+    package1 \
+    package2 \
+    &amp;&amp; apt-get clean \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*</span>
+
+<span class="hljs-comment"># ❌ Bad: Leave package cache</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> apt-get update &amp;&amp; apt-get install -y package1 package2</span>
+</div></code></pre>
+<h3 id="%F0%9F%9A%80-performance-best-practices">🚀 Performance Best Practices</h3>
+<h4 id="7-%F0%9F%8E%AF-use-specific-targets"><strong>7. 🎯 Use Specific Targets</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Build only specific stage for testing</span>
+docker build --target installer -t build-stage .
+
+<span class="hljs-comment"># Build final production image</span>
+docker build -t production-app .
+</div></code></pre>
+<h4 id="8-%F0%9F%93%A6-multi-architecture-support"><strong>8. 📦 Multi-Architecture Support</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Support multiple architectures</span>
+<span class="hljs-keyword">FROM</span> --platform=$BUILDPLATFORM node:<span class="hljs-number">18</span>-alpine AS installer
+<span class="hljs-comment"># Build process...</span>
+
+<span class="hljs-keyword">FROM</span> --platform=$TARGETPLATFORM nginx:alpine AS deployer
+<span class="hljs-comment"># Runtime setup...</span>
+</div></code></pre>
+<h3 id="%F0%9F%94%84-advanced-multi-stage-patterns">🔄 Advanced Multi-Stage Patterns</h3>
+<h4 id="9-%F0%9F%A7%AA-testing-stage"><strong>9. 🧪 Testing Stage</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Build stage</span>
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span>-alpine AS installer
+<span class="hljs-keyword">WORKDIR</span><span class="bash"> /app</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> package*.json ./</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm install</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> . .</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm run build</span>
+
+<span class="hljs-comment"># Test stage</span>
+<span class="hljs-keyword">FROM</span> installer AS tester
+<span class="hljs-keyword">RUN</span><span class="bash"> npm <span class="hljs-built_in">test</span></span>
+
+<span class="hljs-comment"># Production stage</span>
+<span class="hljs-keyword">FROM</span> nginx:alpine AS deployer
+<span class="hljs-keyword">COPY</span><span class="bash"> --from=installer /app/build /usr/share/nginx/html</span>
+</div></code></pre>
+<h4 id="10-%F0%9F%94%80-parallel-builds"><strong>10. 🔀 Parallel Builds</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Base dependencies</span>
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span>-alpine AS base
+<span class="hljs-keyword">WORKDIR</span><span class="bash"> /app</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> package*.json ./</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm install</span>
+
+<span class="hljs-comment"># Frontend build</span>
+<span class="hljs-keyword">FROM</span> base AS frontend
+<span class="hljs-keyword">COPY</span><span class="bash"> frontend/ ./</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm run build:frontend</span>
+
+<span class="hljs-comment"># Backend build  </span>
+<span class="hljs-keyword">FROM</span> base AS backend
+<span class="hljs-keyword">COPY</span><span class="bash"> backend/ ./</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm run build:backend</span>
+
+<span class="hljs-comment"># Final stage</span>
+<span class="hljs-keyword">FROM</span> nginx:alpine AS final
+<span class="hljs-keyword">COPY</span><span class="bash"> --from=frontend /app/dist /usr/share/nginx/html</span>
+<span class="hljs-keyword">COPY</span><span class="bash"> --from=backend /app/build /app/api</span>
+</div></code></pre>
+<h3 id="%F0%9F%93%8A-additional-best-practices">📊 Additional Best Practices</h3>
+<pre><code class="language-mermaid"><div class="mermaid">mindmap
+  root((🎯 Multi-StageBest Practices))
+    🏗️ Build Optimization
+      📦 Use Alpine images
+      🎯 Named stages
+      📋 Layer caching
+      🗂️ .dockerignore file
+    🔒 Security
+      👤 Non-root user
+      🧹 Clean package cache
+      🔍 Minimal attack surface
+      🚫 No secrets in layers
+    ⚡ Performance
+      🔄 Parallel builds
+      📏 Smaller final image
+      🚀 Faster deployments
+      💾 Reduced storage
+    🛠️ Maintenance
+      📝 Clear documentation
+      🏷️ Consistent naming
+      🧪 Testing stages
+      🔄 CI/CD integration
+</div></code></pre>
+<h2 id="%F0%9F%8E%93-summary">🎓 Summary</h2>
+<p>Docker Multi-Stage Builds are a <strong>game-changing feature</strong> that revolutionizes container image optimization[1][2]. By separating build and runtime environments, you can achieve:</p>
+<h3 id="%F0%9F%94%91-key-achievements">🔑 Key Achievements</h3>
+<ul>
+<li><strong>📉 75% smaller images</strong> - From 200MB+ to ~50MB</li>
+<li><strong>🔒 Enhanced security</strong> - Reduced attack surface</li>
+<li><strong>⚡ Faster deployments</strong> - 3x faster pull times</li>
+<li><strong>💰 Cost savings</strong> - Lower storage and bandwidth costs</li>
+<li><strong>🧹 Cleaner workflow</strong> - Single Dockerfile for entire process</li>
+</ul>
+<h3 id="%F0%9F%9A%80-implementation-steps">🚀 Implementation Steps</h3>
+<ol>
+<li><strong>🏗️ Design stages</strong> - Separate build and runtime concerns</li>
+<li><strong>📦 Choose base images</strong> - Use lightweight Alpine variants</li>
+<li><strong>🎯 Copy selectively</strong> - Only production artifacts</li>
+<li><strong>🔒 Apply security</strong> - Non-root users, clean packages</li>
+<li><strong>📊 Monitor results</strong> - Measure size and performance improvements</li>
+</ol>
+<p>Multi-stage builds represent a <strong>fundamental shift</strong> from monolithic container images to <strong>optimized, production-ready deployments</strong>. They embody the principle of &quot;build fat, ship thin&quot; - using all necessary tools during build time while delivering minimal, secure runtime images[3].</p>
+<p>Start implementing multi-stage builds in your projects today to unlock <strong>significant performance gains</strong> and <strong>security improvements</strong> in your containerized applications! 🚀</p>
+<p>[1] https://docs.docker.com/build/building/multi-stage/
+[2] https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/
+[3] https://docs.docker.com/build/building/best-practices/
+[4] https://docs.docker.com/guides/cpp/multistage/
+[5] https://dev.to/raunakgurud09/mastering-docker-multistage-builds-1e0m
+[6] https://dev.to/abhay_yt_52a8e72b213be229/streamline-your-docker-images-with-multi-stage-builds-340c
+[7] https://depot.dev/blog/docker-multi-stage-builds
+[8] https://dev.to/citrux-digital/understanding-docker-multistage-builds-3fm7
+[9] https://labs.iximiuz.com/tutorials/docker-multi-stage-builds
+[10] https://dev.to/kalkwst/multi-stage-dockerfiles-3e90
+[11] https://ruan.dev/blog/2022/07/31/docker-multistage-builds-for-hugo
+[12] https://www.cherryservers.com/blog/docker-multistage-build
+[13] https://github.com/patrickhoefler/dockerfilegraph
+[14] https://docs.docker.com/build/building/multi-platform/
+[15] https://overcast.blog/building-efficient-multi-stage-dockerfiles-for-production-055f34c4baed
+[16] https://learn.microsoft.com/en-us/dotnet/architecture/microservices/docker-application-development-process/docker-app-development-workflow
+[17] https://docs.docker.com/get-started/docker-concepts/building-images/writing-a-dockerfile/
+[18] https://earthly.dev/blog/docker-multistage/
+[19] https://blog.devgenius.io/docker-multi-stage-build-in-detail-3d7da2948797?gi=265baab36942
+[20] https://www.youtube.com/watch?v=ajetvJmBvFo</p>
+
+</body>
+</html>
