@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>6. Kubernetes Multi Node Cluster Setup.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="complete-notes-installing--using-kind-kubernetes-cluster-cka-2024-series-6-%F0%9F%9A%80%F0%9F%90%B3">Complete Notes: Installing &amp; Using Kind Kubernetes Cluster (CKA 2024 Series #6) 🚀🐳</h1>
+<h2 id="%F0%9F%8E%AF-video-goal">🎯 Video Goal</h2>
+<p>Learn how to install Kubernetes <strong>locally</strong> using <strong>kind</strong> (Kubernetes IN Docker), setup clusters for Kubernetes CKA hands-on practice, and manage contexts to switch between clusters.</p>
+<h2 id="1%EF%B8%8F%E2%83%A3-why-not-use-managed-kubernetes-cloud-providers">1️⃣ Why NOT Use Managed Kubernetes Cloud Providers?</h2>
+<ul>
+<li>Managed services like <strong>AKS, EKS, GKE</strong> abstract away the control plane – no access to troubleshoot/control master nodes → less learning opportunity.</li>
+<li>For deep understanding and troubleshooting, <strong>local Kubernetes installation</strong> is preferred.</li>
+<li>Hence, learn Kubernetes using local clusters before using cloud-managed solutions.</li>
+</ul>
+<h2 id="2%EF%B8%8F%E2%83%A3-what-is-kind-kubernetes-in-docker-%F0%9F%90%B3">2️⃣ What is Kind? (Kubernetes IN Docker) 🐳</h2>
+<ul>
+<li>Kind runs Kubernetes <strong>clusters in Docker containers</strong> → each container acts like an individual node (either control-plane or worker).</li>
+<li>Lightweight → easy to setup and destroy clusters quickly for learning and testing.</li>
+<li>Great for hands-on Kubernetes practice.</li>
+</ul>
+<h2 id="3%EF%B8%8F%E2%83%A3-prerequisites-%E2%9C%85">3️⃣ Prerequisites ✅</h2>
+<ul>
+<li><strong>Go 1.16+</strong> installed (not always mandatory if using pre-built binaries).</li>
+<li>Docker / Podman / NerdCTL installed (the container runtime).</li>
+<li>kubectl CLI installed (to interact with your Kubernetes cluster).</li>
+</ul>
+<h2 id="4%EF%B8%8F%E2%83%A3-install-kind-cli-%F0%9F%9B%A0%EF%B8%8F">4️⃣ Install Kind CLI 🛠️</h2>
+<h3 id="installation-options">Installation options:</h3>
+<ul>
+<li><strong>Mac:</strong> <code>brew install kind</code></li>
+<li><strong>Windows:</strong> <code>choco install kind</code> (chocolatey package manager)</li>
+<li><strong>Linux:</strong> Download release binaries or install from source if preferred.</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-comment"># Example on Mac</span>
+brew install kind
+</div></code></pre>
+<h2 id="5%EF%B8%8F%E2%83%A3-creating-your-first-cluster-with-kind-%F0%9F%9A%80">5️⃣ Creating Your First Cluster with Kind 🚀</h2>
+<pre class="hljs"><code><div>kind create cluster --image kindest/node:v1.29.4 --name cka-cluster1
+</div></code></pre>
+<ul>
+<li><code>--image</code>: specifies Kubernetes node image version to use (match exam version, here 1.29.4).</li>
+<li><code>--name</code>: name of the cluster (default is <code>kind</code>).</li>
+<li>This command spins up Docker containers as nodes with the Kubernetes control plane and worker inside same node by default.</li>
+</ul>
+<h2 id="6%EF%B8%8F%E2%83%A3-verify-cluster-status-%E2%9A%99%EF%B8%8F">6️⃣ Verify Cluster Status ⚙️</h2>
+<pre class="hljs"><code><div>kubectl cluster-info --context kind-cka-cluster1
+kubectl get nodes
+</div></code></pre>
+<ul>
+<li>Shows the API server URL and running nodes (single node with control plane and worker roles combined).</li>
+<li><code>kubectl</code> interacts with Kubernetes clusters via <strong>context</strong>.</li>
+<li>Make sure <code>kubectl</code> CLI is installed. Check version:</li>
+</ul>
+<pre class="hljs"><code><div>kubectl version --client
+</div></code></pre>
+<h2 id="7%EF%B8%8F%E2%83%A3-creating-a-multi-node-cluster-with-kind-control-plane--workers-%F0%9F%8F%97%EF%B8%8F">7️⃣ Creating a Multi-Node Cluster with Kind (Control Plane + Workers) 🏗️</h2>
+<h3 id="create-a-kind-config-yaml-file-configyml">Create a Kind config YAML file (<code>config.yml</code>):</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">kind:</span> <span class="hljs-string">Cluster</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">kind.x-k8s.io/v1alpha4</span>
+<span class="hljs-attr">nodes:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">role:</span> <span class="hljs-string">control-plane</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">role:</span> <span class="hljs-string">worker</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">role:</span> <span class="hljs-string">worker</span>
+</div></code></pre>
+<ul>
+<li>1 control plane node + 2 worker nodes → 3 nodes total.</li>
+</ul>
+<h3 id="create-cluster-with-config-file">Create cluster with config file:</h3>
+<pre class="hljs"><code><div>kind create cluster --name cka-cluster2 --image kindest/node:v1.29.4 --config config.yml
+</div></code></pre>
+<h2 id="8%EF%B8%8F%E2%83%A3-check-nodes-of-new-cluster">8️⃣ Check nodes of new cluster:</h2>
+<pre class="hljs"><code><div>kubectl get nodes
+</div></code></pre>
+<ul>
+<li>Will show 3 nodes with roles: 1 control-plane + 2 worker nodes.</li>
+</ul>
+<h2 id="9%EF%B8%8F%E2%83%A3-managing-multiple-clusters-with-kubectl-contexts-%F0%9F%94%80">9️⃣ Managing Multiple Clusters with kubectl Contexts 🔀</h2>
+<ul>
+<li>Each cluster has a <strong>context</strong> in kubeconfig.</li>
+<li>To list contexts:</li>
+</ul>
+<pre class="hljs"><code><div>kubectl config get-contexts
+</div></code></pre>
+<ul>
+<li>
+<p><code>*</code> shows current context in use.</p>
+</li>
+<li>
+<p>To switch context (i.e. switch cluster you target commands to):</p>
+</li>
+</ul>
+<pre class="hljs"><code><div>kubectl config use-context kind-cka-cluster1
+kubectl get nodes   <span class="hljs-comment"># shows nodes from cluster 1</span>
+</div></code></pre>
+<p>Switch back to cluster 2:</p>
+<pre class="hljs"><code><div>kubectl config use-context kind-cka-cluster2
+kubectl get nodes   <span class="hljs-comment"># shows nodes from cluster 2</span>
+</div></code></pre>
+<p><strong>Important:</strong> In the CKA exam, make sure to switch to the right context before beginning each task.</p>
+<h2 id="%F0%9F%94%9F-helpful-kubernetes-cli-command-tips">🔟 Helpful Kubernetes CLI Command Tips</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>List all contexts</td>
+<td><code>kubectl config get-contexts</code></td>
+</tr>
+<tr>
+<td>Switch to a context</td>
+<td><code>kubectl config use-context </code></td>
+</tr>
+<tr>
+<td>Get cluster info</td>
+<td><code>kubectl cluster-info</code></td>
+</tr>
+<tr>
+<td>List nodes</td>
+<td><code>kubectl get nodes</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="1%EF%B8%8F%E2%83%A31%EF%B8%8F%E2%83%A3-useful-kubernetes-docs--cheatsheets-%F0%9F%93%9A">1️⃣1️⃣ Useful Kubernetes Docs &amp; Cheatsheets 📚</h2>
+<ul>
+<li><strong>Main docs</strong>: <a href="https://kubernetes.io/docs/">kubernetes.io/docs</a></li>
+<li><strong>Cheat sheet</strong>: Search for &quot;kubectl cheat sheet&quot; on kubernetes.io → essential for exam.</li>
+<li><strong>Exam note:</strong> You will have access to official docs during the exam to copy long commands, so no need to memorize everything, but practice enough to be efficient.</li>
+</ul>
+<h2 id="%F0%9F%94%84-workflow-summary-installing-and-using-kind">🔄 Workflow Summary: Installing and Using Kind</h2>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    A[Install Docker and kubectl] --> B[Install Kind CLI]
+    B --> C[Create Kind cluster single node]
+    C --> D[Verify cluster with kubectl get nodes]
+    D --> E[Create multi-node config YAML]
+    E --> F[Create Kind cluster with multi-node config]
+    F --> G[Switch kubectl contexts between clusters]
+
+
+</div></code></pre>
+<h2 id="%F0%9F%92%A1-key-takeaways">💡 Key Takeaways:</h2>
+<ul>
+<li><strong>Kind uses Docker containers as nodes</strong> — simple, fast local k8s clusters.</li>
+<li>Always check &amp; switch kubectl context before running commands.</li>
+<li>Multi-node cluster simulates real environments better than default single-node cluster.</li>
+<li>Use Kubernetes official docs and cheat sheets for exam reference.</li>
+<li>Practice common <code>kubectl</code> commands well for exam speed.</li>
+</ul>
+<h2 id="%F0%9F%91%80-whats-next">👀 What's Next?</h2>
+<ul>
+<li>Next video: Creating pods, difference between imperative vs declarative commands, and writing <strong>YAML manifests</strong> (basic Kubernetes resource files).</li>
+</ul>
+<p>🌟 <strong>Happy Learning &amp; Kubernetes Exploration!</strong> 🌟<br>
+Feel free to ask if you want diagrams or more detailed code examples!</p>
+
+</body>
+</html>
