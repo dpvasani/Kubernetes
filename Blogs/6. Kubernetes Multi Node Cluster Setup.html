@@ -515,8 +515,91 @@ kubectl get nodes   <span class="hljs-comment"># shows nodes from cluster 2</spa
 <ul>
 <li>Next video: Creating pods, difference between imperative vs declarative commands, and writing <strong>YAML manifests</strong> (basic Kubernetes resource files).</li>
 </ul>
-<p>🌟 <strong>Happy Learning &amp; Kubernetes Exploration!</strong> 🌟<br>
-Feel free to ask if you want diagrams or more detailed code examples!</p>
+<h2 id="%F0%9F%8C%9F-happy-learning--kubernetes-exploration-%F0%9F%8C%9Ffeel-free-to-ask-if-you-want-diagrams-or-more-detailed-code-examples">🌟 <strong>Happy Learning &amp; Kubernetes Exploration!</strong> 🌟<br>
+Feel free to ask if you want diagrams or more detailed code examples!</h2>
+<h1 id="%F0%9F%A7%B1-kind-kubernetes-cluster-setup-notes">🧱 <code>kind</code> Kubernetes Cluster Setup Notes</h1>
+<h2 id="%F0%9F%94%A7-basic-command-structure">🔧 Basic Command Structure</h2>
+<pre class="hljs"><code><div>kind create cluster [flags]
+</div></code></pre>
+<h3 id="%F0%9F%A7%A9-common-flags">🧩 Common Flags:</h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--name &lt;name&gt;</code></td>
+<td>Name your cluster</td>
+</tr>
+<tr>
+<td><code>--image &lt;image&gt;</code></td>
+<td>Choose Kubernetes version (via kindest/node image)</td>
+</tr>
+<tr>
+<td><code>--config &lt;file.yaml&gt;</code></td>
+<td>Use a custom cluster config file</td>
+</tr>
+<tr>
+<td><code>--wait</code></td>
+<td>Time to wait for cluster readiness (e.g. <code>60s</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="%F0%9F%9F%A2-single-node-cluster">🟢 Single Node Cluster</h2>
+<p>A <strong>default cluster</strong> created by <code>kind</code> is a single node (control plane only).</p>
+<h3 id="%F0%9F%A7%AA-create-a-single-node-cluster">🧪 Create a single node cluster:</h3>
+<pre class="hljs"><code><div>kind create cluster --name cka --image kindest/node:v1.30.0
+</div></code></pre>
+<h3 id="%E2%9C%85-verify">✅ Verify:</h3>
+<pre class="hljs"><code><div>kubectl cluster-info --context kind-cka
+kubectl get nodes
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%9F%A6-multi-node-cluster-1-control-plane--2-workers">🟦 Multi-Node Cluster (1 Control Plane + 2 Workers)</h2>
+<p>To create a multi-node cluster, you need a <strong>YAML config file</strong>.</p>
+<h3 id="%F0%9F%9B%A0%EF%B8%8F-step-1-create-cluster-configyaml">🛠️ Step 1: Create <code>cluster-config.yaml</code></h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># cluster-config.yaml</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Cluster</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">kind.x-k8s.io/v1alpha4</span>
+<span class="hljs-attr">nodes:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">role:</span> <span class="hljs-string">control-plane</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">role:</span> <span class="hljs-string">worker</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">role:</span> <span class="hljs-string">worker</span>
+</div></code></pre>
+<h3 id="%F0%9F%A7%AA-step-2-create-cluster-using-config">🧪 Step 2: Create cluster using config</h3>
+<pre class="hljs"><code><div>kind create cluster --name cka-multi --config cluster-config.yaml --image kindest/node:v1.30.0
+</div></code></pre>
+<h3 id="%E2%9C%85-verify">✅ Verify:</h3>
+<pre class="hljs"><code><div>kubectl get nodes
+</div></code></pre>
+<p>Expected output:</p>
+<pre class="hljs"><code><div>NAME                 STATUS   ROLES           AGE     VERSION
+cka-multi-control-plane   Ready    control-plane   1m      v1.30.0
+cka-multi-worker          Ready    &lt;none&gt;          1m      v1.30.0
+cka-multi-worker2         Ready    &lt;none&gt;          1m      v1.30.0
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%93%A6-list-all-clusters">📦 List All Clusters</h2>
+<pre class="hljs"><code><div>kind get clusters
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%A7%B9-delete-cluster">🧹 Delete Cluster</h2>
+<pre class="hljs"><code><div>kind delete cluster --name cka
+kind delete cluster --name cka-multi
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%93%8C-pro-tips">📌 Pro Tips</h2>
+<ul>
+<li>Always match <code>kind</code> version with your Kubernetes version.</li>
+<li>Useful for <strong>local testing</strong>, <strong>CI pipelines</strong>, and <strong>certification prep</strong> (e.g., CKA).</li>
+<li>Can expose ports by adding <code>extraPortMappings</code> in the config file.</li>
+<li>Docker must be running ✅.</li>
+</ul>
+<hr>
 
 </body>
 </html>
