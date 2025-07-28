@@ -1,1 +1,17 @@
-# This Is Comment in YML
+# 📄 This is a comment in YAML
+
+# 🚀 This is a basic Pod YAML file for NGINX
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    env: demo
+    type: frontend
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+      ports:
+        - containerPort: 80

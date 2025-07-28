@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>7. Pod In Kubernetes.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="complete-notes-introduction-to-pods-and-yaml-in-kubernetes-cka-2024-series-7-%F0%9F%9A%80">Complete Notes: Introduction to Pods and YAML in Kubernetes (CKA 2024 Series #7) 🚀</h1>
+<h2 id="%F0%9F%8E%AF-video-goals">🎯 Video Goals</h2>
+<ul>
+<li>Understand <strong>Pods</strong> in Kubernetes and their creation methods.</li>
+<li>Grasp <strong>YAML fundamentals</strong> as used in Kubernetes resource configuration.</li>
+<li>Learn the difference between <strong>imperative</strong> and <strong>declarative</strong> approaches to managing resources.</li>
+<li>Get hands-on with creating, troubleshooting, and editing Pods.</li>
+</ul>
+<h2 id="1%EF%B8%8F%E2%83%A3-how-does-kubernetes-work">1️⃣ How Does Kubernetes Work?</h2>
+<p><strong>Diagram of Interaction:</strong></p>
+<pre class="hljs"><code><div>User (kubectl) 
+      ⬇️
+Kubernetes API Server (on Control Plane)
+      ⬇️
+Cluster Nodes (Worker/Pods)
+</div></code></pre>
+<ul>
+<li>Users interact with clusters using <code>kubectl</code> (client utility).</li>
+<li>All requests (create, update, delete, get) go through the API Server.</li>
+<li>The API server controls Pods and other resources running on nodes.</li>
+</ul>
+<h2 id="2%EF%B8%8F%E2%83%A3-pod-creation-imperative-vs-declarative">2️⃣ Pod Creation: Imperative vs. Declarative</h2>
+<h3 id="%F0%9F%8F%81-imperative-approach-direct-command">🏁 Imperative Approach (Direct Command)</h3>
+<ul>
+<li>
+<p><strong>Best for:</strong> Quick tasks, troubleshooting, simple resources.</p>
+</li>
+<li>
+<p><strong>Command Example:</strong></p>
+<pre class="hljs"><code><div>kubectl run nginx-pod --image=nginx
+</div></code></pre>
+<ul>
+<li>Creates a Pod named <code>nginx-pod</code> with the <code>nginx</code> container.</li>
+<li>Check Pod status with:<pre class="hljs"><code><div>kubectl get pods
+</div></code></pre>
+</li>
+</ul>
+<p>🚦 <em>Pod status &quot;READY 1/1&quot; means the Pod has one container, which is running.</em></p>
+</li>
+<li>
+<p><strong>Key Point:</strong> Imperative commands are fast but <strong>not reusable</strong>; not ideal for complex, production, or version-controlled deployments.</p>
+</li>
+</ul>
+<h3 id="%F0%9F%93%9C-declarative-approach-yaml-configuration">📜 Declarative Approach (YAML Configuration)</h3>
+<ul>
+<li><strong>Best for:</strong> Production, CI/CD pipelines, GitOps, reuse, complex resources.</li>
+<li><strong>You define the &quot;desired state&quot; in a YAML file and apply it to the cluster.</strong></li>
+<li>YAML is the preferred configuration format in Kubernetes (JSON is also supported, but rarely used).</li>
+</ul>
+<p><strong>Example: Minimal Pod YAML</strong></p>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-pod</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">frontend</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">containers:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-container</span>
+      <span class="hljs-attr">image:</span> <span class="hljs-string">nginx</span>
+      <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<ul>
+<li>Save the file as <code>pod.yaml</code>, then create the Pod:<pre class="hljs"><code><div>kubectl create -f pod.yaml
+<span class="hljs-comment"># or</span>
+kubectl apply -f pod.yaml
+</div></code></pre>
+<code>apply</code> works for both creating and updating resources.</li>
+</ul>
+<h2 id="3%EF%B8%8F%E2%83%A3-yaml-basics--best-practices-%F0%9F%93%9D">3️⃣ YAML Basics &amp; Best Practices 📝</h2>
+<ul>
+<li><strong>Comments:</strong> Start with <code>#</code><pre class="hljs"><code><div># This is a YAML comment
+</div></code></pre>
+</li>
+<li><strong>Indentation:</strong> Critical! Use <strong>spaces</strong>, not tabs. Typically 2 spaces per level.</li>
+<li><strong>Data Types:</strong> Supports strings, ints, lists, dictionaries/maps, nested lists.<pre class="hljs"><code><div><span class="hljs-attr">employee:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">Alice</span>
+  <span class="hljs-attr">age:</span> <span class="hljs-number">30</span>
+  <span class="hljs-attr">skills:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">Python</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">Kubernetes</span>
+  <span class="hljs-attr">address:</span>
+    <span class="hljs-attr">old:</span> <span class="hljs-string">"123 Old St"</span>
+    <span class="hljs-attr">new:</span> <span class="hljs-string">"456 New Ave"</span>
+</div></code></pre>
+</li>
+<li><strong>Kubernetes File Structure:</strong>
+<ul>
+<li><strong>Always 4 top-level fields:</strong>
+<ul>
+<li><code>apiVersion</code></li>
+<li><code>kind</code></li>
+<li><code>metadata</code></li>
+<li><code>spec</code></li>
+</ul>
+</li>
+<li><strong>Order &amp; spelling are case-sensitive</strong> (ex: <code>kind: Pod</code>, NOT <code>kind: pod</code>).</li>
+</ul>
+</li>
+</ul>
+<h2 id="4%EF%B8%8F%E2%83%A3-useful-commands--troubleshooting-%F0%9F%9B%A0%EF%B8%8F">4️⃣ Useful Commands &amp; Troubleshooting 🛠️</h2>
+<ul>
+<li>
+<p><strong>Delete a Pod</strong></p>
+<pre class="hljs"><code><div>kubectl delete pod nginx-pod
+</div></code></pre>
+</li>
+<li>
+<p><strong>Describe a Pod (view events, errors, node info, etc.)</strong></p>
+<pre class="hljs"><code><div>kubectl describe pod nginx-pod
+</div></code></pre>
+</li>
+<li>
+<p><strong>Edit a Pod directly (fix errors without editing YAML file)</strong></p>
+<pre class="hljs"><code><div>kubectl edit pod nginx-pod
+<span class="hljs-comment"># Opens pod spec in your default editor</span>
+</div></code></pre>
+</li>
+<li>
+<p><strong>Get extended Pod/node info</strong></p>
+<pre class="hljs"><code><div>kubectl get pods -o wide      <span class="hljs-comment"># Shows node assignment, Pod IP, etc.</span>
+kubectl get nodes -o wide     <span class="hljs-comment"># Shows kernel, OS, IP, etc.</span>
+</div></code></pre>
+</li>
+<li>
+<p><strong>Show labels on resource</strong></p>
+<pre class="hljs"><code><div>kubectl get pods nginx-pod --show-labels
+</div></code></pre>
+</li>
+<li>
+<p><strong>Access Pod Shell</strong></p>
+<pre class="hljs"><code><div>kubectl <span class="hljs-built_in">exec</span> -it nginx-pod -- sh
+</div></code></pre>
+</li>
+<li>
+<p><strong>Check Pod logs</strong></p>
+<pre class="hljs"><code><div>kubectl logs nginx-pod
+</div></code></pre>
+</li>
+<li>
+<p><strong>Troubleshoot image pull errors</strong></p>
+<ul>
+<li>Misspelled or unauthorized images cause <code>ImagePullBackOff</code> errors.</li>
+</ul>
+</li>
+</ul>
+<h2 id="5%EF%B8%8F%E2%83%A3-generating-yaml-automatically-pro-tip-%F0%9F%A4%96">5️⃣ Generating YAML Automatically (Pro-Tip) 🤖</h2>
+<p>You don’t have to write YAML from scratch!</p>
+<pre class="hljs"><code><div>kubectl run nginx --image=nginx --dry-run=client -o yaml &gt; my-nginx-pod.yaml
+</div></code></pre>
+<ul>
+<li><code>--dry-run=client</code>: Does not create resource</li>
+<li><code>-o yaml</code>: Outputs YAML to the console</li>
+<li><code>&gt;</code>: Redirects output to a file</li>
+</ul>
+<p>You can edit this file as needed and apply it:</p>
+<pre class="hljs"><code><div>kubectl apply -f my-nginx-pod.yaml
+</div></code></pre>
+<p><strong>Generate JSON if needed:</strong></p>
+<pre class="hljs"><code><div>kubectl run nginx --image=nginx --dry-run=client -o json &gt; pod.json
+</div></code></pre>
+<h2 id="6%EF%B8%8F%E2%83%A3-assignment--practice-tasks-%F0%9F%92%AA">6️⃣ Assignment &amp; Practice Tasks 💪</h2>
+<ol>
+<li><strong>Create a Pod imperatively</strong>:<br>
+<code>kubectl run nginx-pod --image=nginx</code></li>
+<li><strong>Generate YAML from imperative command</strong>, modify Pod name, create new Pod with it.</li>
+<li><strong>Troubleshoot YAML errors</strong>:
+<ul>
+<li>Fix a deliberately misconfigured YAML, re-apply, verify Pod health.</li>
+</ul>
+</li>
+</ol>
+<h2 id="7%EF%B8%8F%E2%83%A3-handy-flowchart-pod-lifecycle-in-kubernetes">7️⃣ Handy Flowchart: Pod Lifecycle in Kubernetes</h2>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    A[User/kubectl] --> B{Imperative or Declarative}
+    B -->|Imperative| C[kubectl run command]
+    B -->|Declarative| D[Write YAML manifest]
+    C --> E[Kubernetes API Server]
+    D --> E
+    E --> F[Pod scheduled on Node]
+    F --> G[Pod Running / Error Handling]
+    G --> H{kubectl describe / logs / exec}
+    H --> I[Debug and Fix]
+</div></code></pre>
+<h2 id="%F0%9F%8C%9F-key-takeaways">🌟 Key Takeaways</h2>
+<ul>
+<li><strong>Pods</strong> are the smallest deployable object in Kubernetes.</li>
+<li>There are <strong>two main methods</strong> to create/manage resources: <em>imperative</em> (one-shot commands) and <em>declarative</em> (YAML/JSON manifests).</li>
+<li><strong>YAML</strong> is essential in Kubernetes. Master its syntax, indentation, and conventions!</li>
+<li>Use <code>kubectl explain</code>, <code>kubectl describe</code>, and dry-run output for help and self-generation of manifests.</li>
+<li>Use <strong>labels</strong> to organize, search, and group resources.</li>
+<li>Always remember to <strong>troubleshoot</strong> using logs, describe, and edit operations.</li>
+<li><strong>Practice</strong> with assignments to reinforce learning.</li>
+</ul>
+<hr>
+<h1 id="%F0%9F%9A%80-mastering-pods-in-kubernetes-%F0%9F%A7%B1">🚀 Mastering Pods in Kubernetes 🧱</h1>
+<h2 id="%E2%9C%85-task-1-create-an-nginx-pod-imperatively">✅ Task 1: Create an Nginx Pod Imperatively</h2>
+<p>💡 <strong>Imperative commands</strong> are used when you want to quickly spin up a pod without writing a YAML file.</p>
+<pre class="hljs"><code><div>kubectl run nginx --image=nginx
+</div></code></pre>
+<p>📝 This command tells Kubernetes to:</p>
+<ul>
+<li>Create a pod named <code>nginx</code></li>
+<li>Use the Docker image <code>nginx</code></li>
+</ul>
+<p>🔍 Verify the pod:</p>
+<pre class="hljs"><code><div>kubectl get pods
+</div></code></pre>
+<hr>
+<h2 id="%E2%9C%85-task-2-generate-yaml-from-pod--reuse-it">✅ Task 2: Generate YAML from Pod &amp; Reuse It</h2>
+<h3 id="%F0%9F%A7%BE-step-1-export-yaml-from-existing-pod">🧾 Step 1: Export YAML from existing pod</h3>
+<pre class="hljs"><code><div>kubectl get pod nginx -o yaml &gt; nginx-pod.yaml
+</div></code></pre>
+<h3 id="%E2%9C%8D%EF%B8%8F-step-2-edit-the-yaml">✍️ Step 2: Edit the YAML</h3>
+<p>Change the pod name from <code>nginx</code> → <code>nginx-new</code> in the <code>metadata.name</code> field.</p>
+<pre class="hljs"><code><div><span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-new</span>
+</div></code></pre>
+<p>Also, <strong>remove</strong> the following fields to avoid issues:</p>
+<ul>
+<li><code>status:</code></li>
+<li><code>creationTimestamp:</code></li>
+<li><code>resourceVersion:</code></li>
+<li><code>uid:</code></li>
+<li><code>selfLink:</code></li>
+</ul>
+<h3 id="%F0%9F%A7%AA-step-3-create-new-pod-using-yaml">🧪 Step 3: Create new pod using YAML</h3>
+<pre class="hljs"><code><div>kubectl apply -f nginx-pod.yaml
+</div></code></pre>
+<p>🔍 Verify:</p>
+<pre class="hljs"><code><div>kubectl get pods
+</div></code></pre>
+<p>You should now see:</p>
+<pre class="hljs"><code><div>nginx         Running
+nginx-new     Running
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%9A%A8-task-3-apply-broken-yaml--fix-errors">🚨 Task 3: Apply Broken YAML &amp; Fix Errors</h2>
+<h3 id="%F0%9F%A7%BE-faulty-yaml">🧾 Faulty YAML:</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">test</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">containers:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">image:</span> <span class="hljs-string">rediss</span>
+    <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
+</div></code></pre>
+<h3 id="%E2%9A%A0%EF%B8%8F-apply-it">⚠️ Apply it:</h3>
+<pre class="hljs"><code><div>kubectl apply -f redis.yaml
+</div></code></pre>
+<h3 id="%E2%9D%8C-error">❌ Error:</h3>
+<pre class="hljs"><code><div>Failed to pull image &quot;rediss&quot;: rpc error: code = Unknown desc = Error response from daemon: pull access denied for rediss
+</div></code></pre>
+<h3 id="%F0%9F%A7%A0-root-cause">🧠 Root Cause:</h3>
+<p><code>rediss</code> is a <strong>typo</strong> – correct image name is <code>redis</code>.</p>
+<h3 id="%F0%9F%9B%A0%EF%B8%8F-fix">🛠️ Fix:</h3>
+<p>Edit the YAML:</p>
+<pre class="hljs"><code><div><span class="hljs-bullet">-</span> <span class="hljs-attr">image:</span> <span class="hljs-string">redis</span>
+</div></code></pre>
+<p>Then apply again:</p>
+<pre class="hljs"><code><div>kubectl apply -f redis.yaml
+</div></code></pre>
+<p>🎉 The pod should now be in <strong>Running</strong> state.</p>
+<hr>
+<h2 id="%F0%9F%93%98-key-learnings">📘 Key Learnings</h2>
+<table>
+<thead>
+<tr>
+<th>🔍 Concept</th>
+<th>🧠 Takeaway</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Imperative vs Declarative</strong></td>
+<td>Quick testing vs. long-term reusable config</td>
+</tr>
+<tr>
+<td><strong>Exporting YAML</strong></td>
+<td>Use <code>kubectl get -o yaml</code> to create templates</td>
+</tr>
+<tr>
+<td><strong>Editing YAML</strong></td>
+<td>Always remove metadata like <code>uid</code>, <code>resourceVersion</code>, etc.</td>
+</tr>
+<tr>
+<td><strong>Troubleshooting</strong></td>
+<td>Read error logs carefully, usually a typo or invalid config</td>
+</tr>
+<tr>
+<td><strong>Pod Debugging</strong></td>
+<td>Use <code>kubectl describe pod &lt;name&gt;</code> for deep insights</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="%F0%9F%93%9A-references">📚 References</h2>
+<ul>
+<li>📘 <a href="https://kubernetes.io/docs/concepts/workloads/pods/">Kubernetes Official Docs – Pods</a></li>
+<li>🧪 <code>kubectl</code> CLI Reference: <a href="https://kubernetes.io/docs/reference/kubectl/">https://kubernetes.io/docs/reference/kubectl/</a></li>
+<li>📦 Docker Hub: <a href="https://hub.docker.com/_/nginx">https://hub.docker.com/_/nginx</a></li>
+<li>📦 Redis Docker Image: <a href="https://hub.docker.com/_/redis">https://hub.docker.com/_/redis</a></li>
+</ul>
+<hr>
+
+</body>
+</html>

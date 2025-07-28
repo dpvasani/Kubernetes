@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>8. Basic Of YML.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="%F0%9F%93%84-yaml-full-syntax-guide">📄 YAML Full Syntax Guide</h1>
+<blockquote>
+<p><strong>YAML = YAML Ain't Markup Language</strong><br>
+Used widely in: <strong>Kubernetes</strong>, <strong>GitHub Actions</strong>, <strong>Docker Compose</strong>, <strong>Ansible</strong>, and more.</p>
+</blockquote>
+<hr>
+<h2 id="%F0%9F%A7%A0-basics-of-yaml">🧠 Basics of YAML</h2>
+<ul>
+<li>🧱 <strong>Indentation</strong>: Always use <code>2 spaces</code> – never use tabs ❌</li>
+<li>💡 YAML is case-sensitive</li>
+<li>📄 File extensions: <code>.yaml</code> or <code>.yml</code></li>
+</ul>
+<hr>
+<h2 id="%F0%9F%8F%B7%EF%B8%8F-basic-key-value-pairs">🏷️ Basic Key-Value Pairs</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">name:</span> <span class="hljs-string">Darshan</span> <span class="hljs-string">Vasani</span>
+<span class="hljs-attr">role:</span> <span class="hljs-string">DevOps</span> <span class="hljs-string">Engineer</span>
+<span class="hljs-attr">active:</span> <span class="hljs-literal">true</span>
+<span class="hljs-attr">age:</span> <span class="hljs-number">23</span>
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%94%A2-data-types">🔢 Data Types</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">string_value:</span> <span class="hljs-string">"Hello YAML"</span>
+<span class="hljs-attr">int_value:</span> <span class="hljs-number">25</span>
+<span class="hljs-attr">float_value:</span> <span class="hljs-number">12.34</span>
+<span class="hljs-attr">boolean_true:</span> <span class="hljs-literal">true</span>
+<span class="hljs-attr">boolean_false:</span> <span class="hljs-literal">false</span>
+<span class="hljs-attr">null_value:</span> <span class="hljs-literal">null</span>    <span class="hljs-comment"># or ~ or ""</span>
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%93%8B-comments">📋 Comments</h2>
+<pre class="hljs"><code><div><span class="hljs-comment"># This is a comment in YAML</span>
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%A7%BE-strings">🧾 Strings</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">plain_string:</span> <span class="hljs-string">Hello</span>
+<span class="hljs-attr">single_quoted:</span> <span class="hljs-string">'Don'</span><span class="hljs-string">'t forget me'</span>    <span class="hljs-comment"># escape single quote by doubling it</span>
+<span class="hljs-attr">double_quoted:</span> <span class="hljs-string">"This is a string with \n newline"</span>
+
+<span class="hljs-attr">multiline_string:</span> <span class="hljs-string">|
+  This is a multi-line string
+  which preserves line breaks.
+  Useful for writing big texts.
+</span>
+<span class="hljs-attr">folded_string:</span> <span class="hljs-string">&gt;
+  This is a folded
+  multi-line string that becomes
+  a single line with spaces.
+</span></div></code></pre>
+<hr>
+<h2 id="%F0%9F%93%9A-lists-arrays">📚 Lists (Arrays)</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">languages:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">JavaScript</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">Python</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">Go</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">Rust</span>
+
+<span class="hljs-attr">short_list:</span> <span class="hljs-string">[Red,</span> <span class="hljs-string">Green,</span> <span class="hljs-string">Blue]</span>
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%A7%B1-dictionaries-maps--objects">🧱 Dictionaries (Maps / Objects)</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">database:</span>
+  <span class="hljs-attr">host:</span> <span class="hljs-string">localhost</span>
+  <span class="hljs-attr">port:</span> <span class="hljs-number">5432</span>
+  <span class="hljs-attr">username:</span> <span class="hljs-string">user</span>
+  <span class="hljs-attr">password:</span> <span class="hljs-string">pass</span>
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%A7%AC-nested-structures">🧬 Nested Structures</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">infrastructure:</span>
+  <span class="hljs-attr">cloud:</span> <span class="hljs-string">AWS</span>
+  <span class="hljs-attr">region:</span> <span class="hljs-string">ap-south-1</span>
+  <span class="hljs-attr">services:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">EC2</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">S3</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">Lambda</span>
+</div></code></pre>
+<hr>
+<h2 id="%E2%9A%99%EF%B8%8F-anchors--and-aliases">⚙️ Anchors (&amp;) and Aliases (*)</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">defaults:</span> <span class="hljs-meta">&amp;default_settings</span>
+  <span class="hljs-attr">retries:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">timeout:</span> <span class="hljs-number">30</span>
+
+<span class="hljs-attr">production:</span>
+  <span class="hljs-string">&lt;&lt;:</span> <span class="hljs-meta">*default_settings</span>
+  <span class="hljs-attr">timeout:</span> <span class="hljs-number">60</span>  <span class="hljs-comment"># override</span>
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%A7%AA-boolean-gotchas-yaml-11-vs-12">🧪 Boolean Gotchas (YAML 1.1 vs 1.2)</h2>
+<ul>
+<li>YAML 1.1 treats <code>yes</code>, <code>no</code>, <code>on</code>, <code>off</code> as booleans (❌ unpredictable)</li>
+<li>YAML 1.2 strictly uses <code>true</code> and <code>false</code> (✅ recommended)</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-attr">bool_true:</span> <span class="hljs-literal">true</span>
+<span class="hljs-attr">bool_false:</span> <span class="hljs-literal">false</span>
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%93%A6-kubernetes-pod-example">📦 Kubernetes Pod Example</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">my-nginx-pod</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">containers:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+      <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.29</span>
+      <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%90%B3-docker-compose-example">🐳 Docker Compose Example</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">version:</span> <span class="hljs-string">"3.9"</span>
+<span class="hljs-attr">services:</span>
+  <span class="hljs-attr">web:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:alpine</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">"8080:80"</span>
+  <span class="hljs-attr">db:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">postgres:15</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-attr">POSTGRES_USER:</span> <span class="hljs-string">admin</span>
+      <span class="hljs-attr">POSTGRES_PASSWORD:</span> <span class="hljs-string">secret</span>
+      <span class="hljs-attr">POSTGRES_DB:</span> <span class="hljs-string">mydb</span>
+</div></code></pre>
+<hr>
+<h2 id="%E2%9A%99%EF%B8%8F-github-actions-cicd-workflow">⚙️ GitHub Actions CI/CD Workflow</h2>
+<pre class="hljs"><code><div><span class="hljs-attr">name:</span> <span class="hljs-string">Node</span> <span class="hljs-string">CI</span>
+
+<span class="hljs-attr">on:</span>
+  <span class="hljs-attr">push:</span>
+    <span class="hljs-attr">branches:</span> <span class="hljs-string">[main]</span>
+  <span class="hljs-attr">pull_request:</span>
+    <span class="hljs-attr">branches:</span> <span class="hljs-string">[main]</span>
+
+<span class="hljs-attr">jobs:</span>
+  <span class="hljs-attr">build:</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Checkout</span> <span class="hljs-string">code</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v3</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Set</span> <span class="hljs-string">up</span> <span class="hljs-string">Node.js</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v3</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">node-version:</span> <span class="hljs-number">20</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Install</span> <span class="hljs-string">dependencies</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Run</span> <span class="hljs-string">tests</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">test</span>
+</div></code></pre>
+<hr>
+<h2 id="%E2%9C%85-dos-and-%E2%9D%8C-donts">✅ DOs and ❌ DON'Ts</h2>
+<table>
+<thead>
+<tr>
+<th>✅ DOs</th>
+<th>❌ DON'Ts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Use <strong>2-space</strong> indentation</td>
+<td>❌ Never use <strong>tabs</strong></td>
+</tr>
+<tr>
+<td>Quote strings starting with <code>!</code>, <code>@</code>, <code>#</code>, or numbers</td>
+<td>❌ Don't rely on implicit parsing</td>
+</tr>
+<tr>
+<td>Use hyphens for lists</td>
+<td>❌ Don't align values manually</td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code><div><span class="hljs-comment"># ❌ Incorrect</span>
+<span class="hljs-attr">key:</span>    <span class="hljs-string">value</span>
+
+<span class="hljs-comment"># ✅ Correct</span>
+<span class="hljs-attr">key:</span> <span class="hljs-string">value</span>
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%93%8E-tips--tools">📎 Tips &amp; Tools</h2>
+<ul>
+<li>
+<p>✅ Use linters like <a href="https://yamllint.readthedocs.io/"><code>yamllint</code></a> or <a href="https://www.kubeval.com/"><code>kubeval</code></a></p>
+</li>
+<li>
+<p>🧠 Install VS Code extensions:</p>
+<ul>
+<li>&quot;YAML&quot; by Red Hat</li>
+<li>&quot;Kubernetes&quot; by Microsoft</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="%F0%9F%9A%80-keep-yamling-like-a-pro">🚀 Keep YAMLing Like a Pro!</h2>
+<p>With great indentation comes great configuration power.
+Happy YAMLing! ✨
+Made with ❤️ by <strong>Darshan Vasani</strong></p>
+<hr>
+<h3 id="%F0%9F%A7%B1-1-pod-nginx-example">🧱 1. Pod (nginx example)</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-pod</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">containers:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-container</span>
+      <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span>
+      <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%9A%80-2-deployment">🚀 2. Deployment</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-deployment</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">matchLabels:</span>
+      <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+          <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.25</span>
+          <span class="hljs-attr">ports:</span>
+            <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%8C%90-3-service-clusterip-nodeport-loadbalancer">🌐 3. Service (ClusterIP, NodePort, LoadBalancer)</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-service</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">NodePort</span>  <span class="hljs-comment"># Can be ClusterIP, NodePort, LoadBalancer</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span>
+      <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">80</span>
+      <span class="hljs-attr">nodePort:</span> <span class="hljs-number">30036</span>  <span class="hljs-comment"># Only for NodePort</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%93%A6-4-configmap">📦 4. ConfigMap</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">ConfigMap</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">app-config</span>
+<span class="hljs-attr">data:</span>
+  <span class="hljs-attr">APP_ENV:</span> <span class="hljs-string">production</span>
+  <span class="hljs-attr">DB_HOST:</span> <span class="hljs-string">localhost</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%94%90-5-secret-base64-encoded">🔐 5. Secret (base64 encoded)</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Secret</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">db-secret</span>
+<span class="hljs-attr">type:</span> <span class="hljs-string">Opaque</span>
+<span class="hljs-attr">data:</span>
+  <span class="hljs-attr">username:</span> <span class="hljs-string">dXNlcm5hbWU=</span>  <span class="hljs-comment"># base64 encoded</span>
+  <span class="hljs-attr">password:</span> <span class="hljs-string">cGFzc3dvcmQ=</span>  <span class="hljs-comment"># base64 encoded</span>
+</div></code></pre>
+<p>To encode:</p>
+<pre class="hljs"><code><div><span class="hljs-built_in">echo</span> -n <span class="hljs-string">'username'</span> | base64
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%97%82%EF%B8%8F-6-persistentvolume-static-provisioning">🗂️ 6. PersistentVolume (Static Provisioning)</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">PersistentVolume</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">pv-example</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">capacity:</span>
+    <span class="hljs-attr">storage:</span> <span class="hljs-string">1Gi</span>
+  <span class="hljs-attr">accessModes:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">ReadWriteOnce</span>
+  <span class="hljs-attr">hostPath:</span>
+    <span class="hljs-attr">path:</span> <span class="hljs-string">/mnt/data</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%93%81-7-persistentvolumeclaim">📁 7. PersistentVolumeClaim</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">PersistentVolumeClaim</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">pvc-example</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">accessModes:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">ReadWriteOnce</span>
+  <span class="hljs-attr">resources:</span>
+    <span class="hljs-attr">requests:</span>
+      <span class="hljs-attr">storage:</span> <span class="hljs-string">1Gi</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%A7%BE-8-job">🧾 8. Job</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">batch/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Job</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">simple-job</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">hello</span>
+          <span class="hljs-attr">image:</span> <span class="hljs-string">busybox</span>
+          <span class="hljs-attr">command:</span> <span class="hljs-string">["echo",</span> <span class="hljs-string">"Hello from Kubernetes Job"</span><span class="hljs-string">]</span>
+      <span class="hljs-attr">restartPolicy:</span> <span class="hljs-string">Never</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%94%81-9-cronjob">🔁 9. CronJob</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">batch/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">CronJob</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">hello-cron</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">schedule:</span> <span class="hljs-string">"*/5 * * * *"</span>  <span class="hljs-comment"># Every 5 minutes</span>
+  <span class="hljs-attr">jobTemplate:</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">template:</span>
+        <span class="hljs-attr">spec:</span>
+          <span class="hljs-attr">containers:</span>
+            <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">hello</span>
+              <span class="hljs-attr">image:</span> <span class="hljs-string">busybox</span>
+              <span class="hljs-attr">args:</span>
+                <span class="hljs-bullet">-</span> <span class="hljs-string">/bin/sh</span>
+                <span class="hljs-bullet">-</span> <span class="hljs-string">-c</span>
+                <span class="hljs-bullet">-</span> <span class="hljs-string">date;</span> <span class="hljs-string">echo</span> <span class="hljs-string">Hello</span> <span class="hljs-string">from</span> <span class="hljs-string">cron</span> <span class="hljs-string">job</span>
+          <span class="hljs-attr">restartPolicy:</span> <span class="hljs-string">OnFailure</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%8C%8D-10-ingress-with-nginx-controller">🌍 10. Ingress (with NGINX controller)</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">networking.k8s.io/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Ingress</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">example-ingress</span>
+  <span class="hljs-attr">annotations:</span>
+    <span class="hljs-attr">nginx.ingress.kubernetes.io/rewrite-target:</span> <span class="hljs-string">/</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">rules:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">host:</span> <span class="hljs-string">example.com</span>
+      <span class="hljs-attr">http:</span>
+        <span class="hljs-attr">paths:</span>
+          <span class="hljs-bullet">-</span> <span class="hljs-attr">path:</span> <span class="hljs-string">/</span>
+            <span class="hljs-attr">pathType:</span> <span class="hljs-string">Prefix</span>
+            <span class="hljs-attr">backend:</span>
+              <span class="hljs-attr">service:</span>
+                <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-service</span>
+                <span class="hljs-attr">port:</span>
+                  <span class="hljs-attr">number:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%93%82-11-namespace">📂 11. Namespace</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Namespace</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">dev-namespace</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%93%8E-12-serviceaccount">📎 12. ServiceAccount</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">my-serviceaccount</span>
+  <span class="hljs-attr">namespace:</span> <span class="hljs-string">default</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%93%9A-13-rbac-role-rolebinding">📚 13. RBAC (Role, RoleBinding)</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Role (access within a namespace)</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Role</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">namespace:</span> <span class="hljs-string">default</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">pod-reader</span>
+<span class="hljs-attr">rules:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">apiGroups:</span> <span class="hljs-string">[""]</span>
+    <span class="hljs-attr">resources:</span> <span class="hljs-string">["pods"]</span>
+    <span class="hljs-attr">verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"list"</span><span class="hljs-string">]</span>
+</div></code></pre>
+<pre class="hljs"><code><div><span class="hljs-comment"># RoleBinding</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">RoleBinding</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">read-pods-binding</span>
+  <span class="hljs-attr">namespace:</span> <span class="hljs-string">default</span>
+<span class="hljs-attr">subjects:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span>
+    <span class="hljs-attr">name:</span> <span class="hljs-string">my-serviceaccount</span>
+    <span class="hljs-attr">namespace:</span> <span class="hljs-string">default</span>
+<span class="hljs-attr">roleRef:</span>
+  <span class="hljs-attr">kind:</span> <span class="hljs-string">Role</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">pod-reader</span>
+  <span class="hljs-attr">apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%A7%B9-14-clean-up-job-ttl">🧹 14. Clean-up Job (TTL)</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">batch/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Job</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">ttl-cleanup-job</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">ttlSecondsAfterFinished:</span> <span class="hljs-number">60</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">cleanup</span>
+          <span class="hljs-attr">image:</span> <span class="hljs-string">busybox</span>
+          <span class="hljs-attr">command:</span> <span class="hljs-string">["sh",</span> <span class="hljs-string">"-c"</span><span class="hljs-string">,</span> <span class="hljs-string">"echo Cleaning... &amp;&amp; sleep 10"</span><span class="hljs-string">]</span>
+      <span class="hljs-attr">restartPolicy:</span> <span class="hljs-string">Never</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%93%8C-notes">📌 Notes:</h3>
+<ul>
+<li>All YAMLs are compatible with <code>kubectl apply -f file.yml</code></li>
+<li>Always validate using:</li>
+</ul>
+<pre class="hljs"><code><div>kubectl apply -f file.yml --dry-run=client -o yaml
+</div></code></pre>
+<ul>
+<li>You can use <code>kubectl explain</code> for any field:</li>
+</ul>
+<pre class="hljs"><code><div>kubectl explain deployment.spec.template.spec.containers
+</div></code></pre>
+<hr>
+
+</body>
+</html>
