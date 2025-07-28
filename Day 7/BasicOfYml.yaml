@@ -1,0 +1,169 @@
+# 📄 YAML Full Syntax Guide
+# YAML = YAML Ain't Markup Language
+# Used in: Kubernetes, GitHub Actions, Docker Compose, Ansible, etc.
+# Indentation: Always use 2 spaces (NO tabs ❌)
+
+# ─────────────────────────────────────────────────────
+# 🏷️ Basic Key-Value Pairs
+name: Darshan Vasani
+role: DevOps Engineer
+active: true
+age: 23
+
+# ─────────────────────────────────────────────────────
+# 🔢 Data Types
+string_value: "Hello YAML"
+int_value: 25
+float_value: 12.34
+boolean_true: true
+boolean_false: false
+null_value: null    # or ~ or ""
+
+# ─────────────────────────────────────────────────────
+# 📋 Comments
+# This is a comment in YAML
+
+# ─────────────────────────────────────────────────────
+# 🧾 Strings (Plain, Quoted, Multiline)
+plain_string: Hello
+single_quoted: 'Don''t forget me'    # escape single quote by doubling it
+double_quoted: "This is a string with \n newline"
+
+multiline_string: |
+  This is a multi-line string
+  which preserves line breaks.
+  Useful for writing big texts.
+
+folded_string: >
+  This is a folded
+  multi-line string that becomes
+  a single line with spaces.
+
+# ─────────────────────────────────────────────────────
+# 📚 Lists (Arrays)
+languages:
+  - JavaScript
+  - Python
+  - Go
+  - Rust
+
+short_list: [Red, Green, Blue]   # Inline list
+
+# ─────────────────────────────────────────────────────
+# 🧱 Dictionaries (Maps / Objects)
+database:
+  host: localhost
+  port: 5432
+  username: user
+  password: pass
+
+# ─────────────────────────────────────────────────────
+# 🧬 Nested Structures
+infrastructure:
+  cloud: AWS
+  region: ap-south-1
+  services:
+    - EC2
+    - S3
+    - Lambda
+
+# ─────────────────────────────────────────────────────
+# ⚙️ Anchors (&) and Aliases (*)
+defaults: &default_settings
+  retries: 3
+  timeout: 30
+
+production:
+  <<: *default_settings   # merge values from anchor
+  timeout: 60             # override timeout
+
+# ─────────────────────────────────────────────────────
+# 🧪 Boolean Gotchas (YAML 1.1 vs 1.2)
+# YAML 1.1 treats yes, no, on, off as booleans
+# YAML 1.2 treats only true/false as booleans
+
+# Prefer YAML 1.2 standard:
+bool_true: true
+bool_false: false
+
+# ─────────────────────────────────────────────────────
+# 📦 Kubernetes Example (Pod)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.29
+      ports:
+        - containerPort: 80
+
+# ─────────────────────────────────────────────────────
+# 🐳 Docker Compose Example
+version: "3.9"
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: mydb
+
+# ─────────────────────────────────────────────────────
+# ⚙️ GitHub Actions CI/CD Example
+name: Node CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+# ─────────────────────────────────────────────────────
+# ✅ DOs and ❌ DON'Ts
+
+# ✅ Use spaces, not tabs
+# ❌ Wrong
+# key:    value   ❌ Don't align values like this
+# ✅ Right
+# key: value
+
+# ✅ Indent nested elements with 2 spaces
+# ❌ Never use tabs
+
+# ✅ Quote strings with special characters or starting with numbers
+# key: "123value"
+
+# ✅ Use hyphens for list items, same level indentation
+
+# ─────────────────────────────────────────────────────
+# 📎 Tips:
+# Use YAML linters like yamllint, kubeval for Kubernetes
+# Use VSCode with YAML plugins for IntelliSense
+
+# Happy YAMLing! 🚀
