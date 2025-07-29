@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>9. Kubernetes Deployment, Replication Controller and ReplicaSet.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="%E2%9C%A8-complete-notes-deployments--replicasets-in-kubernetes-cka-2024-video-8-%E2%9C%A8">✨ Complete Notes: Deployments &amp; ReplicaSets in Kubernetes (CKA 2024 Video 8) ✨</h1>
+<h2 id="%F0%9F%8E%AF-video-goals">🎯 <strong>Video Goals</strong></h2>
+<ul>
+<li>Deep dive into <strong>Replication Controllers</strong>, <strong>ReplicaSets</strong>, and <strong>Deployments</strong> in Kubernetes.</li>
+<li>Understand their use, differences, and underlying mechanics.</li>
+<li>Learn and practice all ways to scale, update, and manage applications for high availability and zero downtime.</li>
+<li>Get hands-on with YAML, imperative commands, and best troubleshooting techniques.</li>
+</ul>
+<h2 id="1%EF%B8%8F%E2%83%A3-what-problems-do-replication-controllers--deployments-solve">1️⃣ <strong>What Problems Do Replication Controllers &amp; Deployments Solve?</strong></h2>
+<p>Imagine you run a Pod (say, an <code>nginx</code> webserver) on your cluster:</p>
+<ul>
+<li>User accesses the Pod via a (yet-to-be-covered) service/load balancer.</li>
+<li><strong>Problem:</strong> If the Pod crashes or the Node dies, the app becomes unavailable!</li>
+<li><strong>Solution:</strong> <strong>Kubernetes controllers</strong> can:
+<ul>
+<li>Automatically maintain a desired number of Pods (self-healing!)</li>
+<li>Reschedule crashed Pods.</li>
+<li>Let you scale up/down replicas for increased traffic or resilience.</li>
+<li>Enable <strong>rolling updates</strong> with zero downtime (via Deployments).</li>
+</ul>
+</li>
+</ul>
+<h2 id="2%EF%B8%8F%E2%83%A3-controller-hierarchy--flow-diagrams">2️⃣ <strong>Controller Hierarchy &amp; Flow Diagrams</strong></h2>
+<h3 id="%F0%9F%93%A6-resource-hierarchy">📦 Resource Hierarchy</h3>
+<pre class="hljs"><code><div>Deployment
+   └─ ReplicaSet
+          └─ Pods
+</div></code></pre>
+<ul>
+<li><strong>User</strong> 🧑💻 creates <strong>Deployment</strong> → Deployment manages ReplicaSets → ReplicaSet manages Pods.</li>
+</ul>
+<h3 id="%F0%9F%8C%90-pod-availability--auto-healing">🌐 Pod Availability &amp; Auto-Healing</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+  U[User] -->|Accesses| S((Service/LB))
+  S -->|Routes to| R1[Pod #1]
+  S --> R2[Pod #2]
+  S --> R3[Pod #3]
+  classDef crashed fill:#faa
+  R3:::crashed
+  R3 -.->|Crash| D[ReplicaSet notices]
+  D -->|Launches| NR[New Pod #3]
+  S --> NR
+</div></code></pre>
+<h2 id="3%EF%B8%8F%E2%83%A3-replication-controller-legacy">3️⃣ <strong>Replication Controller (Legacy)</strong></h2>
+<p>Replicates Pods for high availability.</p>
+<h3 id="yaml-example"><strong>YAML Example</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>                   <span class="hljs-comment"># Version for RC</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">ReplicationController</span>      <span class="hljs-comment"># Kind</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-pyon-rc</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+        <span class="hljs-attr">type:</span> <span class="hljs-string">frontend</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-container</span>
+        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx</span>
+        <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<ul>
+<li><strong>Key:</strong> <code>replicas</code> ensures desired Pod count.</li>
+<li><em><em>Controller</em>:</em>* Watches for failed Pods and creates replacements instantly.</li>
+</ul>
+<h4 id="create-rc-check-status-demo-healing"><strong>Create RC, Check status, Demo Healing</strong></h4>
+<pre class="hljs"><code><div>kubectl apply -f rc.yaml        <span class="hljs-comment"># Create RC and its Pods</span>
+kubectl get pods                <span class="hljs-comment"># See all 3 Pods</span>
+kubectl delete pod    <span class="hljs-comment"># Delete a pod - RC will auto-create a replacement!</span>
+kubectl get rc                  <span class="hljs-comment"># See RC status (desired/ready Pods)</span>
+</div></code></pre>
+<h3 id="%F0%9F%A4%94-rc-vs-replicaset-whats-the-difference">🤔 <strong>RC vs. ReplicaSet: What’s the Difference?</strong></h3>
+<ul>
+<li><strong>Replication Controller:</strong>
+<ul>
+<li>Legacy, simple.</li>
+<li>Only manages Pods it creates via “template”.</li>
+</ul>
+</li>
+<li><strong>ReplicaSet (RS):</strong>
+<ul>
+<li>Modern, preferred.</li>
+<li>Supports <strong>label selectors</strong>, can &quot;adopt&quot; matching existing Pods.</li>
+<li>Used <em>internally</em> by Deployments.</li>
+</ul>
+</li>
+</ul>
+<h2 id="4%EF%B8%8F%E2%83%A3-replicaset-modern-flexible-controller">4️⃣ <strong>ReplicaSet: Modern, Flexible Controller</strong></h2>
+<h3 id="yaml-example-with-label-selectors"><strong>YAML Example with Label Selectors</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>                <span class="hljs-comment"># "apps" group is mandatory for RS</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">ReplicaSet</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-rs</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">selector:</span>                   <span class="hljs-comment"># Mandatory for RS!</span>
+    <span class="hljs-attr">matchLabels:</span>
+      <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+  <span class="hljs-attr">template:</span>                   <span class="hljs-comment"># Pod template</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+        <span class="hljs-attr">type:</span> <span class="hljs-string">frontend</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-container</span>
+        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx</span>
+        <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<h4 id="create-replicaset-checkscaleupdate"><strong>Create ReplicaSet, Check/Scale/Update</strong></h4>
+<pre class="hljs"><code><div>kubectl apply -f rs.yaml
+kubectl get pods                  <span class="hljs-comment"># Now managed via RS</span>
+kubectl get rs
+</div></code></pre>
+<h4 id="scale-replicas-multiple-ways"><strong>Scale Replicas (multiple ways):</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Edit the YAML ("replicas: N"), then re-apply</span>
+kubectl apply -f rs.yaml
+
+<span class="hljs-comment"># Edit live object (handy in exam)</span>
+kubectl edit rs nginx-rs
+
+<span class="hljs-comment"># Imperatively:</span>
+kubectl scale rs nginx-rs --replicas=5
+</div></code></pre>
+<h4 id="delete-the-replicaset"><strong>Delete the ReplicaSet</strong></h4>
+<pre class="hljs"><code><div>kubectl delete rs nginx-rs
+kubectl get pods     <span class="hljs-comment"># All managed Pods are gone</span>
+</div></code></pre>
+<h2 id="5%EF%B8%8F%E2%83%A3-deployment-the-gold-standard-for-production-%F0%9F%9A%80">5️⃣ <strong>Deployment: THE Gold Standard for Production 🚀</strong></h2>
+<ul>
+<li>Sits above ReplicaSet in the hierarchy.</li>
+<li>Adds important features:
+<ul>
+<li><strong>Rolling Updates</strong>: update Pods one-by-one or in batches, <strong>no downtime</strong>.</li>
+<li><strong>Rollbacks</strong>: revert to previous versions on failure.</li>
+<li><strong>Declarative/imperative control</strong>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="deployment-yaml-example"><strong>Deployment YAML Example</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-deploy</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">matchLabels:</span>
+      <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+          <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span>
+          <span class="hljs-attr">ports:</span>
+            <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<h4 id="create-and-inspect-deployment"><strong>Create and Inspect Deployment</strong></h4>
+<pre class="hljs"><code><div>kubectl apply -f deployment.yaml
+kubectl get all        <span class="hljs-comment"># Shows deploy, RS, Pods, Service info</span>
+kubectl get deploy     <span class="hljs-comment"># Summary</span>
+kubectl describe deploy nginx-deploy
+</div></code></pre>
+<h3 id="%F0%9F%9A%A6-rolling-updates--zero-downtime">🚦 <strong>Rolling Updates &amp; Zero Downtime</strong></h3>
+<h4 id="update-the-image-rolling-fashion">Update the image (Rolling fashion)</h4>
+<pre class="hljs"><code><div>kubectl <span class="hljs-built_in">set</span> image deploy nginx-deploy nginx=nginx:1.19.1
+kubectl rollout status deploy nginx-deploy     <span class="hljs-comment"># View progress</span>
+kubectl get pods                              <span class="hljs-comment"># Watch new Pods appear as old ones terminate</span>
+</div></code></pre>
+<ul>
+<li><strong>Rolling Update:</strong> At any time, some Pods serve the user while others update, so users never experience downtime.</li>
+<li><strong>Rollback instantly if release fails:</strong><pre class="hljs"><code><div>kubectl rollout undo deploy nginx-deploy
+</div></code></pre>
+</li>
+</ul>
+<h4 id="rollout-history">Rollout History</h4>
+<pre class="hljs"><code><div>kubectl rollout <span class="hljs-built_in">history</span> deploy nginx-deploy
+</div></code></pre>
+<h3 id="%F0%9F%A7%A0-deployment-cheat-sheet">🧠 <strong>Deployment Cheat-Sheet</strong></h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create deployment</td>
+<td><code>kubectl apply -f deployment.yaml</code></td>
+</tr>
+<tr>
+<td>View all resources</td>
+<td><code>kubectl get all</code></td>
+</tr>
+<tr>
+<td>Scale replicas</td>
+<td><code>kubectl scale deployment nginx-deploy --replicas=N</code></td>
+</tr>
+<tr>
+<td>Update image</td>
+<td><code>kubectl set image deploy nginx-deploy nginx=nginx:1.19.1</code></td>
+</tr>
+<tr>
+<td>Monitor rollout</td>
+<td><code>kubectl rollout status deploy nginx-deploy</code></td>
+</tr>
+<tr>
+<td>Rollback deployment</td>
+<td><code>kubectl rollout undo deploy nginx-deploy</code></td>
+</tr>
+<tr>
+<td>View rollout history</td>
+<td><code>kubectl rollout history deploy nginx-deploy</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="6%EF%B8%8F%E2%83%A3-imperative-generate-yamlresource-with-dry-run-%F0%9F%9A%80">6️⃣ <strong>Imperative: Generate YAML/Resource with Dry-Run</strong> 🚀</h2>
+<pre class="hljs"><code><div>kubectl create deploy nginx-new --image=nginx --dry-run=client -o yaml &gt; deploy.yaml
+</div></code></pre>
+<ul>
+<li>Now edit <code>deploy.yaml</code> before applying!</li>
+</ul>
+<h2 id="7%EF%B8%8F%E2%83%A3-summary-mindmap--flow-diagram">7️⃣ <strong>Summary Mindmap / Flow Diagram</strong></h2>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+  SRC["Imperative (kubectl)"] -->|or| DECY["Declarative (YAML)"]
+  DECY --> |kubectl apply| API[Kubernetes API Server]
+  SRC --> API
+  API --> DEPLOY(Deployment)
+  DEPLOY --> RS[ReplicaSet]
+  RS --> PODS[Pods]
+  DEPLOY -.->|Rolling Update/Rollback| RS
+  RS -.->|Self-Healing| PODS
+</div></code></pre>
+<h2 id="8%EF%B8%8F%E2%83%A3-key-concepts-recap">8️⃣ <strong>Key Concepts Recap</strong></h2>
+<ul>
+<li><strong>Replication Controller (RC):</strong> Legacy, auto-heals, less flexible.</li>
+<li><strong>ReplicaSet (RS):</strong> Modern RC, label selector, used by Deployments.</li>
+<li><strong>Deployment:</strong> Production standard, manages RS, enables rolling updates/rollbacks.</li>
+<li><strong>Scaling:</strong> Scale up/down via YAML changes, imperative commands, or <code>edit</code>ing live objects.</li>
+<li><strong>Rolling Updates:</strong> No downtime, safe, and can be rolled back.</li>
+<li><strong>Imperative &amp; Declarative:</strong> Both are valid—pick which saves time and suits your workflow.</li>
+</ul>
+<h2 id="9%EF%B8%8F%E2%83%A3-hands-on-assignments-to-reinforce">9️⃣ <strong>Hands-On Assignments to Reinforce</strong></h2>
+<ol>
+<li><strong>Create a ReplicaSet with 2 Nginx Pods. Scale to 5, then back to 1.</strong></li>
+<li><strong>Update your Deployment’s image using <code>kubectl set image</code>, check <code>rollout status</code>, then rollback.</strong></li>
+<li><strong>Create a Deployment using kubectl with <code>--dry-run=client -o yaml</code>, edit and apply.</strong></li>
+<li><strong>Practice deleting, editing, and describing resources, troubleshooting events and errors.</strong></li>
+</ol>
+<h2 id="%F0%9F%8F%86-pro-tips-for-cka-exam">🏆 <strong>Pro Tips for CKA Exam</strong></h2>
+<ul>
+<li>Practice all <strong>3 scaling techniques</strong>: YAML, imperative, live-edit.</li>
+<li><strong>Cheat-sheet access is allowed</strong>! Use it for syntax/commands in exam (time is precious).</li>
+<li>Use <code>kubectl help</code> and <code>kubectl explain</code> freely.</li>
+<li>Get comfortable with <strong>labels/selectors</strong> for resource targeting.</li>
+<li>Understand difference between <strong>Pod</strong>, <strong>ReplicaSet</strong>, and <strong>Deployment</strong>.</li>
+</ul>
+<hr>
+<h1 id="%E2%9C%A8-complete-notes-deployments--replicasets-in-kubernetes-cka-2024-video-8-%E2%9C%A8">✨ Complete Notes: Deployments &amp; ReplicaSets in Kubernetes (CKA 2024 Video 8) ✨</h1>
+<h2 id="%F0%9F%8E%AF-video-goals">🎯 <strong>Video Goals</strong></h2>
+<ul>
+<li>Deep dive into <strong>Replication Controllers</strong>, <strong>ReplicaSets</strong>, and <strong>Deployments</strong> in Kubernetes.</li>
+<li>Understand their use, differences, and underlying mechanics.</li>
+<li>Learn and practice all ways to scale, update, and manage applications for high availability and zero downtime.</li>
+<li>Get hands-on with YAML, imperative commands, and best troubleshooting techniques.</li>
+</ul>
+<h2 id="1%EF%B8%8F%E2%83%A3-what-problems-do-replication-controllers--deployments-solve">1️⃣ <strong>What Problems Do Replication Controllers &amp; Deployments Solve?</strong></h2>
+<p>Imagine you run a Pod (say, an <code>nginx</code> webserver) on your cluster:</p>
+<ul>
+<li>User accesses the Pod via a (yet-to-be-covered) service/load balancer.</li>
+<li><strong>Problem:</strong> If the Pod crashes or the Node dies, the app becomes unavailable!</li>
+<li><strong>Solution:</strong> <strong>Kubernetes controllers</strong> can:
+<ul>
+<li>Automatically maintain a desired number of Pods (self-healing!)</li>
+<li>Reschedule crashed Pods.</li>
+<li>Let you scale up/down replicas for increased traffic or resilience.</li>
+<li>Enable <strong>rolling updates</strong> with zero downtime (via Deployments).</li>
+</ul>
+</li>
+</ul>
+<h2 id="2%EF%B8%8F%E2%83%A3-controller-hierarchy--flow-diagrams">2️⃣ <strong>Controller Hierarchy &amp; Flow Diagrams</strong></h2>
+<h3 id="%F0%9F%93%A6-resource-hierarchy">📦 Resource Hierarchy</h3>
+<pre class="hljs"><code><div>Deployment
+   └─ ReplicaSet
+          └─ Pods
+</div></code></pre>
+<ul>
+<li><strong>User</strong> 🧑💻 creates <strong>Deployment</strong> → Deployment manages ReplicaSets → ReplicaSet manages Pods.</li>
+</ul>
+<h3 id="%F0%9F%8C%90-pod-availability--auto-healing">🌐 Pod Availability &amp; Auto-Healing</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+  U[User] -->|Accesses| S((Service/LB))
+  S -->|Routes to| R1[Pod #1]
+  S --> R2[Pod #2]
+  S --> R3[Pod #3]
+  classDef crashed fill:#faa
+  R3:::crashed
+  R3 -.->|Crash| D[ReplicaSet notices]
+  D -->|Launches| NR[New Pod #3]
+  S --> NR
+</div></code></pre>
+<h2 id="3%EF%B8%8F%E2%83%A3-replication-controller-legacy">3️⃣ <strong>Replication Controller (Legacy)</strong></h2>
+<p>Replicates Pods for high availability.</p>
+<h3 id="yaml-example"><strong>YAML Example</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>                   <span class="hljs-comment"># Version for RC</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">ReplicationController</span>      <span class="hljs-comment"># Kind</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-pyon-rc</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+        <span class="hljs-attr">type:</span> <span class="hljs-string">frontend</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-container</span>
+        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx</span>
+        <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<ul>
+<li><strong>Key:</strong> <code>replicas</code> ensures desired Pod count.</li>
+<li><em><em>Controller</em>:</em>* Watches for failed Pods and creates replacements instantly.</li>
+</ul>
+<h4 id="create-rc-check-status-demo-healing"><strong>Create RC, Check status, Demo Healing</strong></h4>
+<pre class="hljs"><code><div>kubectl apply -f rc.yaml        <span class="hljs-comment"># Create RC and its Pods</span>
+kubectl get pods                <span class="hljs-comment"># See all 3 Pods</span>
+kubectl delete pod    <span class="hljs-comment"># Delete a pod - RC will auto-create a replacement!</span>
+kubectl get rc                  <span class="hljs-comment"># See RC status (desired/ready Pods)</span>
+</div></code></pre>
+<h3 id="%F0%9F%A4%94-rc-vs-replicaset-whats-the-difference">🤔 <strong>RC vs. ReplicaSet: What’s the Difference?</strong></h3>
+<ul>
+<li><strong>Replication Controller:</strong>
+<ul>
+<li>Legacy, simple.</li>
+<li>Only manages Pods it creates via “template”.</li>
+</ul>
+</li>
+<li><strong>ReplicaSet (RS):</strong>
+<ul>
+<li>Modern, preferred.</li>
+<li>Supports <strong>label selectors</strong>, can &quot;adopt&quot; matching existing Pods.</li>
+<li>Used <em>internally</em> by Deployments.</li>
+</ul>
+</li>
+</ul>
+<h2 id="4%EF%B8%8F%E2%83%A3-replicaset-modern-flexible-controller">4️⃣ <strong>ReplicaSet: Modern, Flexible Controller</strong></h2>
+<h3 id="yaml-example-with-label-selectors"><strong>YAML Example with Label Selectors</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>                <span class="hljs-comment"># "apps" group is mandatory for RS</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">ReplicaSet</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-rs</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">selector:</span>                   <span class="hljs-comment"># Mandatory for RS!</span>
+    <span class="hljs-attr">matchLabels:</span>
+      <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+  <span class="hljs-attr">template:</span>                   <span class="hljs-comment"># Pod template</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+        <span class="hljs-attr">type:</span> <span class="hljs-string">frontend</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-container</span>
+        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx</span>
+        <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<h4 id="create-replicaset-checkscaleupdate"><strong>Create ReplicaSet, Check/Scale/Update</strong></h4>
+<pre class="hljs"><code><div>kubectl apply -f rs.yaml
+kubectl get pods                  <span class="hljs-comment"># Now managed via RS</span>
+kubectl get rs
+</div></code></pre>
+<h4 id="scale-replicas-multiple-ways"><strong>Scale Replicas (multiple ways):</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Edit the YAML ("replicas: N"), then re-apply</span>
+kubectl apply -f rs.yaml
+
+<span class="hljs-comment"># Edit live object (handy in exam)</span>
+kubectl edit rs nginx-rs
+
+<span class="hljs-comment"># Imperatively:</span>
+kubectl scale rs nginx-rs --replicas=5
+</div></code></pre>
+<h4 id="delete-the-replicaset"><strong>Delete the ReplicaSet</strong></h4>
+<pre class="hljs"><code><div>kubectl delete rs nginx-rs
+kubectl get pods     <span class="hljs-comment"># All managed Pods are gone</span>
+</div></code></pre>
+<h2 id="5%EF%B8%8F%E2%83%A3-deployment-the-gold-standard-for-production-%F0%9F%9A%80">5️⃣ <strong>Deployment: THE Gold Standard for Production 🚀</strong></h2>
+<ul>
+<li>Sits above ReplicaSet in the hierarchy.</li>
+<li>Adds important features:
+<ul>
+<li><strong>Rolling Updates</strong>: update Pods one-by-one or in batches, <strong>no downtime</strong>.</li>
+<li><strong>Rollbacks</strong>: revert to previous versions on failure.</li>
+<li><strong>Declarative/imperative control</strong>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="deployment-yaml-example"><strong>Deployment YAML Example</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-deploy</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">matchLabels:</span>
+      <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+          <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span>
+          <span class="hljs-attr">ports:</span>
+            <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<h4 id="create-and-inspect-deployment"><strong>Create and Inspect Deployment</strong></h4>
+<pre class="hljs"><code><div>kubectl apply -f deployment.yaml
+kubectl get all        <span class="hljs-comment"># Shows deploy, RS, Pods, Service info</span>
+kubectl get deploy     <span class="hljs-comment"># Summary</span>
+kubectl describe deploy nginx-deploy
+</div></code></pre>
+<h3 id="%F0%9F%9A%A6-rolling-updates--zero-downtime">🚦 <strong>Rolling Updates &amp; Zero Downtime</strong></h3>
+<h4 id="update-the-image-rolling-fashion">Update the image (Rolling fashion)</h4>
+<pre class="hljs"><code><div>kubectl <span class="hljs-built_in">set</span> image deploy nginx-deploy nginx=nginx:1.19.1
+kubectl rollout status deploy nginx-deploy     <span class="hljs-comment"># View progress</span>
+kubectl get pods                              <span class="hljs-comment"># Watch new Pods appear as old ones terminate</span>
+</div></code></pre>
+<ul>
+<li><strong>Rolling Update:</strong> At any time, some Pods serve the user while others update, so users never experience downtime.</li>
+<li><strong>Rollback instantly if release fails:</strong><pre class="hljs"><code><div>kubectl rollout undo deploy nginx-deploy
+</div></code></pre>
+</li>
+</ul>
+<h4 id="rollout-history">Rollout History</h4>
+<pre class="hljs"><code><div>kubectl rollout <span class="hljs-built_in">history</span> deploy nginx-deploy
+</div></code></pre>
+<h3 id="%F0%9F%A7%A0-deployment-cheat-sheet">🧠 <strong>Deployment Cheat-Sheet</strong></h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create deployment</td>
+<td><code>kubectl apply -f deployment.yaml</code></td>
+</tr>
+<tr>
+<td>View all resources</td>
+<td><code>kubectl get all</code></td>
+</tr>
+<tr>
+<td>Scale replicas</td>
+<td><code>kubectl scale deployment nginx-deploy --replicas=N</code></td>
+</tr>
+<tr>
+<td>Update image</td>
+<td><code>kubectl set image deploy nginx-deploy nginx=nginx:1.19.1</code></td>
+</tr>
+<tr>
+<td>Monitor rollout</td>
+<td><code>kubectl rollout status deploy nginx-deploy</code></td>
+</tr>
+<tr>
+<td>Rollback deployment</td>
+<td><code>kubectl rollout undo deploy nginx-deploy</code></td>
+</tr>
+<tr>
+<td>View rollout history</td>
+<td><code>kubectl rollout history deploy nginx-deploy</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="6%EF%B8%8F%E2%83%A3-imperative-generate-yamlresource-with-dry-run-%F0%9F%9A%80">6️⃣ <strong>Imperative: Generate YAML/Resource with Dry-Run</strong> 🚀</h2>
+<pre class="hljs"><code><div>kubectl create deploy nginx-new --image=nginx --dry-run=client -o yaml &gt; deploy.yaml
+</div></code></pre>
+<ul>
+<li>Now edit <code>deploy.yaml</code> before applying!</li>
+</ul>
+<h2 id="7%EF%B8%8F%E2%83%A3-summary-mindmap--flow-diagram">7️⃣ <strong>Summary Mindmap / Flow Diagram</strong></h2>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+  SRC["Imperative (kubectl)"] -->|or| DECY["Declarative (YAML)"]
+  DECY --> |kubectl apply| API[Kubernetes API Server]
+  SRC --> API
+  API --> DEPLOY(Deployment)
+  DEPLOY --> RS[ReplicaSet]
+  RS --> PODS[Pods]
+  DEPLOY -.->|Rolling Update/Rollback| RS
+  RS -.->|Self-Healing| PODS
+</div></code></pre>
+<h2 id="8%EF%B8%8F%E2%83%A3-key-concepts-recap">8️⃣ <strong>Key Concepts Recap</strong></h2>
+<ul>
+<li><strong>Replication Controller (RC):</strong> Legacy, auto-heals, less flexible.</li>
+<li><strong>ReplicaSet (RS):</strong> Modern RC, label selector, used by Deployments.</li>
+<li><strong>Deployment:</strong> Production standard, manages RS, enables rolling updates/rollbacks.</li>
+<li><strong>Scaling:</strong> Scale up/down via YAML changes, imperative commands, or <code>edit</code>ing live objects.</li>
+<li><strong>Rolling Updates:</strong> No downtime, safe, and can be rolled back.</li>
+<li><strong>Imperative &amp; Declarative:</strong> Both are valid—pick which saves time and suits your workflow.</li>
+</ul>
+<h2 id="9%EF%B8%8F%E2%83%A3-hands-on-assignments-to-reinforce">9️⃣ <strong>Hands-On Assignments to Reinforce</strong></h2>
+<ol>
+<li><strong>Create a ReplicaSet with 2 Nginx Pods. Scale to 5, then back to 1.</strong></li>
+<li><strong>Update your Deployment’s image using <code>kubectl set image</code>, check <code>rollout status</code>, then rollback.</strong></li>
+<li><strong>Create a Deployment using kubectl with <code>--dry-run=client -o yaml</code>, edit and apply.</strong></li>
+<li><strong>Practice deleting, editing, and describing resources, troubleshooting events and errors.</strong></li>
+</ol>
+<h2 id="%F0%9F%8F%86-pro-tips-for-cka-exam">🏆 <strong>Pro Tips for CKA Exam</strong></h2>
+<ul>
+<li>Practice all <strong>3 scaling techniques</strong>: YAML, imperative, live-edit.</li>
+<li><strong>Cheat-sheet access is allowed</strong>! Use it for syntax/commands in exam (time is precious).</li>
+<li>Use <code>kubectl help</code> and <code>kubectl explain</code> freely.</li>
+<li>Get comfortable with <strong>labels/selectors</strong> for resource targeting.</li>
+<li>Understand difference between <strong>Pod</strong>, <strong>ReplicaSet</strong>, and <strong>Deployment</strong>.</li>
+</ul>
+<hr>
+<h2 id="%F0%9F%9A%80-key-concepts-pods-replica-sets-and-deployments">🚀 Key Concepts: Pods, Replica Sets, and Deployments</h2>
+<p>At its core, Kubernetes aims to manage containerized applications. A single <strong>Pod</strong> 📦 is the smallest deployable unit in Kubernetes, representing a single instance of your application. However, running standalone Pods has a significant drawback: if a Pod crashes, your application becomes unavailable. This is where <strong>Replica Sets</strong> and <strong>Deployments</strong> come into play.</p>
+<h3 id="%F0%9F%8C%90-the-problem-pod-crashes-and-downtime">🌐 The Problem: Pod Crashes and Downtime</h3>
+<p>Imagine a user accessing an Nginx Pod. If this Pod crashes, the user receives no response, leading to <strong>downtime</strong>. This is unacceptable for production applications.</p>
+<hr>
+<h3 id="%F0%9F%9B%A1%EF%B8%8F-the-solution-replication-controller--replica-set">🛡️ The Solution: Replication Controller &amp; Replica Set</h3>
+<p>To address Pod failures and ensure high availability, Kubernetes introduces the concept of <strong>Replication Controllers</strong> (legacy) and <strong>Replica Sets</strong> (preferred and newer).</p>
+<p>A <strong>Replication Controller</strong> or <strong>Replica Set</strong> is a Kubernetes object that ensures a specified number of Pod replicas are running at all times.</p>
+<h4 id="flow-diagram-how-a-replication-controllerreplica-set-works"><strong>Flow Diagram: How a Replication Controller/Replica Set Works</strong></h4>
+<pre><code class="language-mermaid"><div class="mermaid">graph TD
+    User -->|Accesses Application| LoadBalancer/Endpoint
+    LoadBalancer/Endpoint -->|Routes Traffic to| ReplicationController/ReplicaSet
+    ReplicationController/ReplicaSet -->|Manages| Pod1
+    ReplicationController/ReplicaSet -->|Manages| Pod2
+    ReplicationController/ReplicaSet -->|Manages| Pod3
+
+    subgraph Pod Management
+        Pod1 --x|Crashes| Pod1_Crashed
+        ReplicationController/ReplicaSet -->|Detects Crash| ReplicationController/ReplicaSet_Action
+        ReplicationController/ReplicaSet_Action -->|Spins up New Pod| Pod_New
+        ReplicationController/ReplicaSet -->|Ensures Desired Replicas| Pod_New
+    end
+
+    ReplicationController/ReplicaSet -->|Ensures High Availability & Load Balancing| DesiredReplicas
+</div></code></pre>
+<h4 id="key-responsibilities"><strong>Key Responsibilities:</strong></h4>
+<ul>
+<li><strong>Auto-Healing:</strong> If a Pod crashes or gets deleted, the Replica Set automatically spins up a new Pod to maintain the desired number of replicas.</li>
+<li><strong>High Availability:</strong> By running multiple identical instances of a Pod, the application remains available even if some Pods fail.</li>
+<li><strong>Load Balancing:</strong> The Replica Set redirects traffic to healthy Pods. While it doesn't perform explicit load balancing itself, it works in conjunction with Services (discussed in later videos) to distribute traffic across its managed Pods.</li>
+<li><strong>Scaling:</strong> You can manually scale your application by increasing or decreasing the <code>replicas</code> count in the Replica Set definition. This allows you to handle increased user traffic or scale down during low demand.</li>
+</ul>
+<h4 id="replication-controller-vs-replica-set"><strong>Replication Controller vs. Replica Set:</strong></h4>
+<ul>
+<li><strong>Replication Controller (RC):</strong>
+<ul>
+<li><strong>Legacy</strong> version.</li>
+<li>Manages only Pods that <em>it</em> created.</li>
+</ul>
+</li>
+<li><strong>Replica Set (RS):</strong>
+<ul>
+<li><strong>Newer and preferred</strong> version.</li>
+<li>Can manage <strong>existing Pods</strong> that were not initially part of the Replica Set, using <strong><code>selector.matchLabels</code></strong>. This is a key differentiator.</li>
+</ul>
+</li>
+</ul>
+<h4 id="replica-set-manifest-example-rcyaml-for-replicaset"><strong>Replica Set Manifest Example (<code>rc.yaml</code> for ReplicaSet):</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span> <span class="hljs-comment"># Note the 'apps/v1' for ReplicaSet</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">ReplicaSet</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-rs</span> <span class="hljs-comment"># Changed from RC to RS</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span> <span class="hljs-comment"># Desired number of Pod replicas</span>
+  <span class="hljs-attr">selector:</span> <span class="hljs-comment"># This is crucial for ReplicaSet to manage existing pods</span>
+    <span class="hljs-attr">matchLabels:</span>
+      <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span> <span class="hljs-comment"># Matches pods with this label</span>
+  <span class="hljs-attr">template:</span> <span class="hljs-comment"># Pod template definition</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span> <span class="hljs-comment"># Pod specific label</span>
+        <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span> <span class="hljs-comment"># Pod specific label, matching the selector</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span>
+        <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%9A%80-deployments-beyond-replica-sets-for-seamless-updates">🚀 Deployments: Beyond Replica Sets for Seamless Updates</h3>
+<p>While Replica Sets handle basic replication and auto-healing, <strong>Deployments</strong> offer additional, crucial functionalities, especially for managing application updates and rollbacks.</p>
+<p>A <strong>Deployment</strong> is a higher-level Kubernetes object that manages Replica Sets and provides declarative updates to Pods and Replica Sets.</p>
+<h4 id="flow-diagram-how-deployment-works"><strong>Flow Diagram: How Deployment Works</strong></h4>
+<pre><code class="language-mermaid"><div class="mermaid">graph TD
+    User -->|Interacts with| Deployment
+    Deployment -->|Manages| ReplicaSet_v1_1
+    Deployment -->|Manages| ReplicaSet_v1_2
+    ReplicaSet_v1_1 -->|Contains| Pod_v1_1_A
+    ReplicaSet_v1_1 -->|Contains| Pod_v1_1_B
+    ReplicaSet_v1_1 -->|Contains| Pod_v1_1_C
+
+    Deployment -->|Initiates Update| Deployment_Update
+    Deployment_Update -->|Creates| ReplicaSet_v1_2
+
+    ReplicaSet_v1_2 -->|Spins up| Pod_v1_2_X
+    ReplicaSet_v1_2 -->|Spins up| Pod_v1_2_Y
+
+    Deployment_Update -->|Scales Down| ReplicaSet_v1_1
+    Deployment_Update -->|Scales Up| ReplicaSet_v1_2
+
+    ReplicaSet_v1_2 -->|Contains| Pod_v1_2_X
+    ReplicaSet_v1_2 -->|Contains| Pod_v1_2_Y
+    ReplicaSet_v1_2 -->|Contains| Pod_v1_2_Z
+
+    Deployment -->|Ensures Zero-Downtime Updates| ApplicationAvailability
+    Deployment -->|Enables Rollbacks| PreviousVersions
+
+</div></code></pre>
+<h4 id="key-advantages-of-deployments"><strong>Key Advantages of Deployments:</strong></h4>
+<ul>
+<li><strong>Rolling Updates:</strong> This is the primary benefit. When you update a Deployment (e.g., change the image version), it performs a rolling update. This means new Pods with the updated version are gradually brought up while old Pods are gracefully terminated. This ensures <strong>zero-downtime deployments</strong>, critical for production environments.</li>
+<li><strong>Rollbacks:</strong> Deployments maintain a history of revisions, allowing you to easily roll back to a previous stable version if an update causes issues.</li>
+<li><strong>Declarative Updates:</strong> You define the desired state, and the Deployment controller works to achieve and maintain that state.</li>
+<li><strong>Management of Replica Sets:</strong> A Deployment implicitly creates and manages Replica Sets. When you perform an update, the Deployment creates a <em>new</em> Replica Set for the new version and scales down the old one.</li>
+</ul>
+<h4 id="deployment-manifest-example-deployyaml"><strong>Deployment Manifest Example (<code>deploy.yaml</code>):</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span> <span class="hljs-comment"># Same API version as ReplicaSet for Deployment</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx-deploy</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">env:</span> <span class="hljs-string">demo</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">matchLabels:</span>
+      <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-attr">template:</span>
+    <span class="hljs-attr">metadata:</span>
+      <span class="hljs-attr">labels:</span>
+        <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+    <span class="hljs-attr">spec:</span>
+      <span class="hljs-attr">containers:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span> <span class="hljs-comment"># Image to be deployed</span>
+        <span class="hljs-attr">ports:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
+</div></code></pre>
+<hr>
+<h3 id="%F0%9F%92%BB-hands-on-working-with-deployments-and-replica-sets">💻 Hands-On: Working with Deployments and Replica Sets</h3>
+<h4 id="creating-a-replica-set"><strong>Creating a Replica Set:</strong></h4>
+<ol>
+<li><strong>Define the YAML:</strong> Create an <code>rc.yaml</code> file (or <code>rs.yaml</code>) as shown above, ensuring <code>kind: ReplicaSet</code> and <code>apiVersion: apps/v1</code>.</li>
+<li><strong>Apply the YAML:</strong><pre class="hljs"><code><div>kubectl apply -f rc.yaml
+</div></code></pre>
+</li>
+<li><strong>Verify Pods and Replica Set:</strong><pre class="hljs"><code><div>kubectl get pods
+kubectl get rs
+</div></code></pre>
+</li>
+</ol>
+<h4 id="scaling-a-replica-set"><strong>Scaling a Replica Set:</strong></h4>
+<ul>
+<li><strong>Via YAML:</strong> Update the <code>replicas</code> field in <code>rc.yaml</code> and re-apply:<pre class="hljs"><code><div>kubectl apply -f rc.yaml
+</div></code></pre>
+</li>
+<li><strong>Editing Live Object:</strong><pre class="hljs"><code><div>kubectl edit rs nginx-rs
+</div></code></pre>
+(Change <code>replicas</code> and save. Changes are applied immediately.)</li>
+<li><strong>Imperative Command (Recommended for Speed in Exams):</strong><pre class="hljs"><code><div>kubectl scale --replicas=10 rs/nginx-rs
+</div></code></pre>
+</li>
+</ul>
+<h4 id="creating-a-deployment"><strong>Creating a Deployment:</strong></h4>
+<ol>
+<li><strong>Define the YAML:</strong> Create a <code>deploy.yaml</code> file as shown above, ensuring <code>kind: Deployment</code> and <code>apiVersion: apps/v1</code>.</li>
+<li><strong>Apply the YAML:</strong><pre class="hljs"><code><div>kubectl apply -f deploy.yaml
+</div></code></pre>
+</li>
+<li><strong>Verify Deployment, Replica Set, and Pods:</strong><pre class="hljs"><code><div>kubectl get deploy
+kubectl get rs
+kubectl get pods
+kubectl get all <span class="hljs-comment"># Shows all related resources</span>
+</div></code></pre>
+</li>
+</ol>
+<h4 id="updating-a-deployment-rolling-update"><strong>Updating a Deployment (Rolling Update):</strong></h4>
+<ul>
+<li><strong>Imperative Command (Recommended):</strong><pre class="hljs"><code><div>kubectl <span class="hljs-built_in">set</span> image deployment/nginx-deploy nginx=nginx:1.9.1
+</div></code></pre>
+This command updates the <code>nginx</code> container's image to <code>nginx:1.9.1</code> within the <code>nginx-deploy</code> deployment. Observe the Pods as they are updated in a rolling fashion.</li>
+</ul>
+<h4 id="checking-deployment-history"><strong>Checking Deployment History:</strong></h4>
+<ul>
+<li>To see the different revisions of your deployment:<pre class="hljs"><code><div>kubectl rollout <span class="hljs-built_in">history</span> deployment/nginx-deploy
+</div></code></pre>
+</li>
+</ul>
+<h4 id="rolling-back-a-deployment"><strong>Rolling Back a Deployment:</strong></h4>
+<ul>
+<li>To undo the last deployment change:<pre class="hljs"><code><div>kubectl rollout undo deployment/nginx-deploy
+</div></code></pre>
+You can also roll back to a specific revision using <code>--to-revision=&lt;revision-number&gt;</code>.</li>
+</ul>
+<h4 id="generating-yaml-from-imperative-commands-dry-run"><strong>Generating YAML from Imperative Commands (Dry Run):</strong></h4>
+<ul>
+<li>This is a useful technique to quickly generate a base YAML for a resource.<pre class="hljs"><code><div>kubectl create deployment nginx-new --image=nginx --dry-run=client -o yaml &gt; deploy_new.yaml
+</div></code></pre>
+This command creates a deployment named <code>nginx-new</code> with the <code>nginx</code> image, performs a dry run (doesn't actually create it), outputs the YAML to the console, and redirects it to a file named <code>deploy_new.yaml</code>.</li>
+</ul>
+<hr>
+<h2 id="%E2%9C%85-summary">✅ Summary</h2>
+<ul>
+<li><strong>Pods</strong> are the basic unit, but lack self-healing.</li>
+<li><strong>Replica Sets</strong> ensure a desired number of Pod replicas are running, providing auto-healing and high availability.</li>
+<li><strong>Deployments</strong> manage Replica Sets and enable <strong>zero-downtime rolling updates</strong> and <strong>easy rollbacks</strong>, making them the go-to choice for managing applications in Kubernetes.</li>
+</ul>
+<p>By understanding these concepts and practicing the associated commands, you'll be well-equipped to manage your applications effectively in a Kubernetes environment.</p>
+<hr>
+
+</body>
+</html>

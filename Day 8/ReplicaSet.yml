@@ -1,0 +1,22 @@
+apiVersion: apps/v1                # "apps" group is mandatory for RS
+kind: ReplicaSet
+metadata:
+  name: nginx-rs
+  labels:
+    env: demo
+spec:
+  replicas: 3
+  selector:                   # Mandatory for RS!
+    matchLabels:
+      env: demo
+  template:                   # Pod template
+    metadata:
+      labels:
+        env: demo
+        type: frontend
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+        ports:
+        - containerPort: 80

@@ -1,0 +1,19 @@
+piVersion: v1                   # Version for RC
+kind: ReplicationController      # Kind
+metadata:
+  name: nginx-pyon-rc
+  labels:
+    env: demo
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        env: demo
+        type: frontend
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+        ports:
+        - containerPort: 80
