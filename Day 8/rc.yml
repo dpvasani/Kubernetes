@@ -1,19 +1,18 @@
-# 📦 ReplicationController YAML for NGINX Pod
-
-apiVersion: v1
-kind: ReplicationController
+apiVersion: apps/v1
+kind: ReplicaSet
 metadata:
-  name: nginx-rc
+  name: nginx-rs
   labels:
-    env: demo
+    app: nginx
 spec:
-  replicas: 2  # ✅ Optional: add replicas (default is 1)
+  replicas: 3
   selector:
-    env: demo
+    matchLabels:
+      app: nginx
   template:
     metadata:
-      name: nginx-pod
       labels:
+        app: nginx
         env: demo
         type: frontend
     spec:
