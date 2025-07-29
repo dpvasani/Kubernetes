@@ -1,0 +1,24 @@
+# 📦 ReplicationController YAML for NGINX Pod
+
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: nginx-rc
+  labels:
+    env: demo
+spec:
+  replicas: 2  # ✅ Optional: add replicas (default is 1)
+  selector:
+    env: demo
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        env: demo
+        type: frontend
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+          ports:
+            - containerPort: 80
