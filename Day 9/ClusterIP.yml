@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: clusterip-service
+  labels:
+    env: demo
+spec:
+  type: ClusterIP  # 👈 Optional, since it's default
+  selector:
+    env: demo       # ✅ Must match the pod's label
+  ports:
+    - port: 80         # Port exposed by the service
+      targetPort: 80   # Port your app listens on inside the container

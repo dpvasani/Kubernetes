@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport-service
+  labels:
+    env: demo
+spec:
+  type: NodePort
+  selector:
+    env: demo   # ✅ Must match the pod's label
+  ports:
+    - port: 80         # Exposed port on the service
+      targetPort: 80 # Port your app listens on inside the container
+      nodePort: 30001  # Exposed port on the Node (between 30000–32767)
