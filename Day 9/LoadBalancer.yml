@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: loadbalancer-service
+  labels:
+    app: myapp
+spec:
+  type: LoadBalancer  # ✅ Key difference from ClusterIP or NodePort
+  selector:
+    app: myapp         # 🔗 Must match the pod's label
+  ports:
+    - port: 80         # 🌐 Port exposed externally
+      targetPort: 8080 # 🎯 Port inside the container
