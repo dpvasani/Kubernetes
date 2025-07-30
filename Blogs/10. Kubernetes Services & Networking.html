@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>10. Kubernetes Services & Networking.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="%E2%9C%A8-kubernetes-services-deep-dive-cka-2024-%E2%9C%A8">✨ Kubernetes Services Deep Dive (CKA 2024) ✨</h1>
+<h2 id="%F0%9F%8E%AF-what-are-kubernetes-services">🎯 <strong>What Are Kubernetes Services?</strong></h2>
+<p>Kubernetes Services are an <strong>abstraction layer</strong> that provides a stable network endpoint for accessing pods. They solve the fundamental problem of pod networking in dynamic environments where pods are constantly created, destroyed, and rescheduled.</p>
+<h2 id="1%EF%B8%8F%E2%83%A3-clusterip-service---internal-cluster-communication-%F0%9F%94%92">1️⃣ <strong>ClusterIP Service - Internal Cluster Communication</strong> 🔒</h2>
+<h3 id="%F0%9F%8E%AF-purpose--use-cases"><strong>🎯 Purpose &amp; Use Cases:</strong></h3>
+<ul>
+<li><strong>Default service type</strong> (when no type is specified)</li>
+<li>Provides <strong>internal-only</strong> communication within the cluster</li>
+<li>Perfect for <strong>backend services</strong>, <strong>databases</strong>, <strong>APIs</strong> that don't need external access</li>
+<li>Enables <strong>service discovery</strong> through DNS names</li>
+</ul>
+<h3 id="%F0%9F%94%A7-how-it-works"><strong>🔧 How It Works:</strong></h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+    F[Frontend Pod] -->|cluster-svc:80| S[ClusterIP Service]
+    S --> B1[Backend Pod 1]
+    S --> B2[Backend Pod 2]
+    S --> B3[Backend Pod 3]
+    
+    style F fill:#e3f2fd
+    style S fill:#f1f8e9
+    style B1 fill:#fff3e0
+    style B2 fill:#fff3e0
+    style B3 fill:#fff3e0
+</div></code></pre>
+<h3 id="%F0%9F%93%9D-complete-yaml-example"><strong>📝 Complete YAML Example:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">backend-service</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">backend</span>
+    <span class="hljs-attr">tier:</span> <span class="hljs-string">api</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">ClusterIP</span>  <span class="hljs-comment"># Optional - this is default</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">http</span>           <span class="hljs-comment"># Optional port name</span>
+      <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>             <span class="hljs-comment"># Port exposed by service</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8080</span>     <span class="hljs-comment"># Port on pod where app listens</span>
+      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span>        <span class="hljs-comment"># Default is TCP</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">backend</span>           <span class="hljs-comment"># Matches pods with this label</span>
+    <span class="hljs-attr">version:</span> <span class="hljs-string">v1</span>
+</div></code></pre>
+<h3 id="%F0%9F%9A%80-creating--testing"><strong>🚀 Creating &amp; Testing:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Create the service</span>
+kubectl apply -f clusterip.yaml
+
+<span class="hljs-comment"># Verify service creation</span>
+kubectl get svc backend-service
+kubectl describe svc backend-service
+
+<span class="hljs-comment"># Check endpoints (pod IPs behind the service)</span>
+kubectl get endpoints backend-service
+
+<span class="hljs-comment"># Test from another pod</span>
+kubectl run <span class="hljs-built_in">test</span>-pod --image=busybox --rm -it -- sh
+<span class="hljs-comment"># Inside the pod:</span>
+wget -qO- http://backend-service:80
+<span class="hljs-comment"># Or use full DNS name:</span>
+wget -qO- http://backend-service.default.svc.cluster.local:80
+</div></code></pre>
+<h3 id="%F0%9F%94%8D-key-features"><strong>🔍 Key Features:</strong></h3>
+<ul>
+<li><strong>Virtual IP (VIP)</strong>: Service gets a stable cluster IP</li>
+<li><strong>DNS Resolution</strong>: Service accessible via <code>..svc.cluster.local</code></li>
+<li><strong>Load Balancing</strong>: Distributes traffic across healthy pods</li>
+<li><strong>Health Checks</strong>: Only routes to ready pods</li>
+</ul>
+<h3 id="%F0%9F%92%A1-best-practices"><strong>💡 Best Practices:</strong></h3>
+<ul>
+<li>Use meaningful service names (becomes DNS name)</li>
+<li>Always use labels for pod selection</li>
+<li>Consider port naming for multi-port services</li>
+<li>Use different ports for different protocols (HTTP, gRPC, etc.)</li>
+</ul>
+<h2 id="2%EF%B8%8F%E2%83%A3-nodeport-service---external-access-through-node-ports-%F0%9F%8C%90">2️⃣ <strong>NodePort Service - External Access Through Node Ports</strong> 🌐</h2>
+<h3 id="%F0%9F%8E%AF-purpose--use-cases"><strong>🎯 Purpose &amp; Use Cases:</strong></h3>
+<ul>
+<li>Provides <strong>external access</strong> to cluster services</li>
+<li>Exposes service on a <strong>static port</strong> on each node</li>
+<li>Good for <strong>development</strong>, <strong>testing</strong>, or <strong>small deployments</strong></li>
+<li><strong>Not recommended</strong> for production (security concerns, port management)</li>
+</ul>
+<h3 id="%F0%9F%94%A7-how-it-works"><strong>🔧 How It Works:</strong></h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    U[👤 User] -->|node-ip:30001| N1[Node 1:30001]
+    U -->|node-ip:30001| N2[Node 2:30001] 
+    U -->|node-ip:30001| N3[Node 3:30001]
+    
+    N1 --> S[NodePort Service :80]
+    N2 --> S
+    N3 --> S
+    
+    S --> P1[Pod 1:8080]
+    S --> P2[Pod 2:8080]
+    S --> P3[Pod 3:8080]
+    
+    style U fill:#e3f2fd
+    style N1 fill:#f3e5f5
+    style N2 fill:#f3e5f5
+    style N3 fill:#f3e5f5
+    style S fill:#f1f8e9
+</div></code></pre>
+<h3 id="%F0%9F%93%9D-complete-yaml-example"><strong>📝 Complete YAML Example:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">frontend-nodeport</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">frontend</span>
+    <span class="hljs-attr">service-type:</span> <span class="hljs-string">nodeport</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">NodePort</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">http</span>
+      <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>              <span class="hljs-comment"># ClusterIP port (internal)</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8080</span>      <span class="hljs-comment"># Pod port</span>
+      <span class="hljs-attr">nodePort:</span> <span class="hljs-number">30001</span>       <span class="hljs-comment"># External port (30000-32767)</span>
+      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">frontend</span>
+    <span class="hljs-attr">tier:</span> <span class="hljs-string">web</span>
+</div></code></pre>
+<h3 id="%F0%9F%9A%80-creating--testing"><strong>🚀 Creating &amp; Testing:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Create NodePort service</span>
+kubectl apply -f nodeport.yaml
+
+<span class="hljs-comment"># Check service details</span>
+kubectl get svc frontend-nodeport
+kubectl describe svc frontend-nodeport
+
+<span class="hljs-comment"># Get node IPs</span>
+kubectl get nodes -o wide
+
+<span class="hljs-comment"># Access externally (replace with actual node IP)</span>
+curl http://:30001
+curl http://172.18.0.2:30001
+
+<span class="hljs-comment"># For kind clusters (after port mapping):</span>
+curl http://localhost:30001
+</div></code></pre>
+<h3 id="%F0%9F%94%8D-port-types-explained"><strong>🔍 Port Types Explained:</strong></h3>
+<ul>
+<li><strong>NodePort (30001)</strong>: External port accessible from outside cluster</li>
+<li><strong>Port (80)</strong>: Internal cluster port for pod-to-pod communication</li>
+<li><strong>TargetPort (8080)</strong>: Actual port where application listens in pod</li>
+</ul>
+<h3 id="%E2%9A%99%EF%B8%8F-nodeport-range--allocation"><strong>⚙️ NodePort Range &amp; Allocation:</strong></h3>
+<ul>
+<li><strong>Default range</strong>: 30000-32767</li>
+<li><strong>Random allocation</strong>: If nodePort not specified, Kubernetes assigns randomly</li>
+<li><strong>Manual specification</strong>: Can specify specific port within range</li>
+<li><strong>Firewall considerations</strong>: Ensure NodePort range is open in firewalls</li>
+</ul>
+<h3 id="%F0%9F%94%90-security-considerations"><strong>🔐 Security Considerations:</strong></h3>
+<ul>
+<li>Exposes services on all nodes</li>
+<li>Requires firewall rules for NodePort range</li>
+<li>No built-in SSL termination</li>
+<li>Consider using ingress controllers instead for production</li>
+</ul>
+<h2 id="3%EF%B8%8F%E2%83%A3-loadbalancer-service---cloud-provider-integration-%E2%98%81%EF%B8%8F">3️⃣ <strong>LoadBalancer Service - Cloud Provider Integration</strong> ☁️</h2>
+<h3 id="%F0%9F%8E%AF-purpose--use-cases"><strong>🎯 Purpose &amp; Use Cases:</strong></h3>
+<ul>
+<li><strong>Production-grade</strong> external access</li>
+<li>Integrates with <strong>cloud provider load balancers</strong> (AWS ALB/NLB, Azure LB, GCP LB)</li>
+<li>Provides <strong>high availability</strong> and <strong>SSL termination</strong></li>
+<li>Handles <strong>traffic distribution</strong> and <strong>health checks</strong></li>
+</ul>
+<h3 id="%F0%9F%94%A7-how-it-works"><strong>🔧 How It Works:</strong></h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    I[🌐 Internet] --> CLB[☁️ Cloud Load Balancer]
+    CLB --> N1[Node 1]
+    CLB --> N2[Node 2]
+    CLB --> N3[Node 3]
+    
+    N1 --> S[LoadBalancer Service]
+    N2 --> S
+    N3 --> S
+    
+    S --> P1[Pod 1]
+    S --> P2[Pod 2]
+    S --> P3[Pod 3]
+    
+    style I fill:#e3f2fd
+    style CLB fill:#e8f5e8
+    style S fill:#f1f8e9
+</div></code></pre>
+<h3 id="%F0%9F%93%9D-complete-yaml-example"><strong>📝 Complete YAML Example:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">web-loadbalancer</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">web</span>
+    <span class="hljs-attr">service-type:</span> <span class="hljs-string">loadbalancer</span>
+  <span class="hljs-attr">annotations:</span>
+    <span class="hljs-comment"># AWS specific annotations</span>
+    <span class="hljs-attr">service.beta.kubernetes.io/aws-load-balancer-type:</span> <span class="hljs-string">"nlb"</span>
+    <span class="hljs-attr">service.beta.kubernetes.io/aws-load-balancer-ssl-cert:</span> <span class="hljs-string">"arn:aws:acm:region:account:certificate/cert-id"</span>
+    <span class="hljs-comment"># Azure specific annotations</span>
+    <span class="hljs-attr">service.beta.kubernetes.io/azure-load-balancer-internal:</span> <span class="hljs-string">"false"</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">LoadBalancer</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">http</span>
+      <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8080</span>
+      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">https</span>
+      <span class="hljs-attr">port:</span> <span class="hljs-number">443</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8080</span>
+      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">web</span>
+    <span class="hljs-attr">tier:</span> <span class="hljs-string">frontend</span>
+  <span class="hljs-comment"># Optional: Restrict source IPs</span>
+  <span class="hljs-attr">loadBalancerSourceRanges:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">"10.0.0.0/8"</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">"192.168.0.0/16"</span>
+</div></code></pre>
+<h3 id="%F0%9F%9A%80-creating--testing"><strong>🚀 Creating &amp; Testing:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Create LoadBalancer service</span>
+kubectl apply -f loadbalancer.yaml
+
+<span class="hljs-comment"># Check service status (wait for EXTERNAL-IP)</span>
+kubectl get svc web-loadbalancer -w
+
+<span class="hljs-comment"># Check cloud provider load balancer details</span>
+kubectl describe svc web-loadbalancer
+
+<span class="hljs-comment"># Access via external IP (once provisioned)</span>
+curl http://
+curl https://
+</div></code></pre>
+<h3 id="%E2%98%81%EF%B8%8F-cloud-provider-specifics"><strong>☁️ Cloud Provider Specifics:</strong></h3>
+<h4 id="aws-integration"><strong>AWS Integration:</strong></h4>
+<ul>
+<li>Creates Application Load Balancer (ALB) or Network Load Balancer (NLB)</li>
+<li>Supports SSL certificates from ACM</li>
+<li>Integrates with Route 53 for DNS</li>
+<li>Security groups automatically configured</li>
+</ul>
+<h4 id="azure-integration"><strong>Azure Integration:</strong></h4>
+<ul>
+<li>Creates Azure Load Balancer</li>
+<li>Supports internal and external load balancers</li>
+<li>Integrates with Azure DNS</li>
+<li>Network security groups configured</li>
+</ul>
+<h4 id="gcp-integration"><strong>GCP Integration:</strong></h4>
+<ul>
+<li>Creates Google Cloud Load Balancer</li>
+<li>Supports HTTP(S) and TCP load balancing</li>
+<li>Integrates with Cloud DNS</li>
+<li>Firewall rules automatically created</li>
+</ul>
+<h3 id="%E2%8F%B1%EF%B8%8F-behavior-in-different-environments"><strong>⏱️ Behavior in Different Environments:</strong></h3>
+<ul>
+<li><strong>Cloud platforms</strong>: Provisions actual external load balancer</li>
+<li><strong>Local clusters</strong> (kind, minikube): Shows `` status, falls back to NodePort</li>
+<li><strong>On-premises</strong>: Requires MetalLB or similar load balancer implementation</li>
+</ul>
+<h2 id="4%EF%B8%8F%E2%83%A3-externalname-service---dns-aliasing--service-mesh-%F0%9F%94%97">4️⃣ <strong>ExternalName Service - DNS Aliasing &amp; Service Mesh</strong> 🔗</h2>
+<h3 id="%F0%9F%8E%AF-purpose--use-cases"><strong>🎯 Purpose &amp; Use Cases:</strong></h3>
+<ul>
+<li><strong>DNS aliasing</strong> for external services</li>
+<li><strong>Service mesh integration</strong> patterns</li>
+<li><strong>Migration scenarios</strong> (gradual move from external to internal services)</li>
+<li><strong>Multi-cluster</strong> service discovery</li>
+<li><strong>Legacy system</strong> integration</li>
+</ul>
+<h3 id="%F0%9F%94%A7-how-it-works"><strong>🔧 How It Works:</strong></h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+    P[Pod] -->|"external-db.default.svc.cluster.local"| S[ExternalName Service]
+    S -->|DNS CNAME| E[📍 external-database.company.com:5432]
+    
+    style P fill:#e3f2fd
+    style S fill:#fff3e0
+    style E fill:#f3e5f5
+</div></code></pre>
+<h3 id="%F0%9F%93%9D-complete-yaml-examples"><strong>📝 Complete YAML Examples:</strong></h3>
+<h4 id="database-connection-example"><strong>Database Connection Example:</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">external-database</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">database</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">external</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">ExternalName</span>
+  <span class="hljs-attr">externalName:</span> <span class="hljs-string">prod-db.company.com</span>  <span class="hljs-comment"># External FQDN</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">postgres</span>
+      <span class="hljs-attr">port:</span> <span class="hljs-number">5432</span>
+      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span>
+</div></code></pre>
+<h4 id="api-gateway-example"><strong>API Gateway Example:</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">payment-api</span>
+  <span class="hljs-attr">labels:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">payment</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">external</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">ExternalName</span>
+  <span class="hljs-attr">externalName:</span> <span class="hljs-string">api.payment-provider.com</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">https</span>
+      <span class="hljs-attr">port:</span> <span class="hljs-number">443</span>
+      <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span>
+</div></code></pre>
+<h3 id="%F0%9F%9A%80-creating--testing"><strong>🚀 Creating &amp; Testing:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Create ExternalName service</span>
+kubectl apply -f externalname.yaml
+
+<span class="hljs-comment"># Verify service creation</span>
+kubectl get svc external-database
+kubectl describe svc external-database
+
+<span class="hljs-comment"># Test DNS resolution from pod</span>
+kubectl run <span class="hljs-built_in">test</span>-pod --image=busybox --rm -it -- sh
+<span class="hljs-comment"># Inside pod:</span>
+nslookup external-database.default.svc.cluster.local
+<span class="hljs-comment"># Should resolve to external-database.company.com</span>
+
+<span class="hljs-comment"># Test connection (if external service is accessible)</span>
+telnet external-database.default.svc.cluster.local 5432
+</div></code></pre>
+<h3 id="%F0%9F%94%8D-advanced-use-cases"><strong>🔍 Advanced Use Cases:</strong></h3>
+<h4 id="migration-pattern"><strong>Migration Pattern:</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Phase 1: Point to external service</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">user-service</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">ExternalName</span>
+  <span class="hljs-attr">externalName:</span> <span class="hljs-string">legacy-users.company.com</span>
+
+<span class="hljs-meta">---</span>
+<span class="hljs-comment"># Phase 2: Gradually move to internal service</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">user-service</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">ClusterIP</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8080</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">user-service-v2</span>
+</div></code></pre>
+<h4 id="multi-environment-configuration"><strong>Multi-Environment Configuration:</strong></h4>
+<pre class="hljs"><code><div><span class="hljs-comment"># Development environment</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">payment-service</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">ExternalName</span>
+  <span class="hljs-attr">externalName:</span> <span class="hljs-string">payment-dev.company.com</span>
+
+<span class="hljs-meta">---</span>
+<span class="hljs-comment"># Production environment  </span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">payment-service</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">ExternalName</span>
+  <span class="hljs-attr">externalName:</span> <span class="hljs-string">payment-prod.company.com</span>
+</div></code></pre>
+<h3 id="%F0%9F%94%A7-dns-behavior"><strong>🔧 DNS Behavior:</strong></h3>
+<ul>
+<li><strong>CNAME record</strong>: ExternalName creates DNS CNAME pointing to external FQDN</li>
+<li><strong>No proxy</strong>: Traffic goes directly from pod to external service</li>
+<li><strong>No load balancing</strong>: Kubernetes doesn't handle external service load balancing</li>
+<li><strong>No health checks</strong>: External service health not monitored by Kubernetes</li>
+</ul>
+<h3 id="%E2%9A%A0%EF%B8%8F-limitations"><strong>⚠️ Limitations:</strong></h3>
+<ul>
+<li>No built-in load balancing for external services</li>
+<li>No health checking of external endpoints</li>
+<li>Requires external service to be accessible from cluster</li>
+<li>DNS-only solution (no IP-based routing)</li>
+</ul>
+<h2 id="%F0%9F%8E%9B%EF%B8%8F-service-creation-methods-comparison">🎛️ <strong>Service Creation Methods Comparison</strong></h2>
+<h3 id="%F0%9F%93%9D-declarative-yaml---recommended-for-production"><strong>📝 Declarative (YAML) - Recommended for Production:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Create from YAML file</span>
+kubectl apply -f service.yaml
+
+<span class="hljs-comment"># Update service</span>
+kubectl apply -f service.yaml
+
+<span class="hljs-comment"># Benefits: Version control, repeatability, complex configurations</span>
+</div></code></pre>
+<h3 id="%E2%9A%A1-imperative-cli---quick-testing--exam"><strong>⚡ Imperative (CLI) - Quick Testing &amp; Exam:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Expose deployment as ClusterIP</span>
+kubectl expose deployment app --port=80 --target-port=8080
+
+<span class="hljs-comment"># Expose as NodePort</span>
+kubectl expose deployment app --<span class="hljs-built_in">type</span>=NodePort --port=80
+
+<span class="hljs-comment"># Expose as LoadBalancer</span>
+kubectl expose deployment app --<span class="hljs-built_in">type</span>=LoadBalancer --port=80
+
+<span class="hljs-comment"># Generate YAML from imperative command</span>
+kubectl expose deployment app --port=80 --dry-run=client -o yaml &gt; service.yaml
+</div></code></pre>
+<h2 id="%F0%9F%94%A7-advanced-service-features">🔧 <strong>Advanced Service Features</strong></h2>
+<h3 id="%F0%9F%8E%AF-multi-port-services"><strong>🎯 Multi-Port Services:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">multi-port-service</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">ClusterIP</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">http</span>
+      <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8080</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">https</span>  
+      <span class="hljs-attr">port:</span> <span class="hljs-number">443</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8443</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">metrics</span>
+      <span class="hljs-attr">port:</span> <span class="hljs-number">9090</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">9090</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">web-server</span>
+</div></code></pre>
+<h3 id="%F0%9F%94%92-session-affinity"><strong>🔒 Session Affinity:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">sticky-service</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">type:</span> <span class="hljs-string">ClusterIP</span>
+  <span class="hljs-attr">sessionAffinity:</span> <span class="hljs-string">ClientIP</span>  <span class="hljs-comment"># Routes same client to same pod</span>
+  <span class="hljs-attr">sessionAffinityConfig:</span>
+    <span class="hljs-attr">clientIP:</span>
+      <span class="hljs-attr">timeoutSeconds:</span> <span class="hljs-number">3600</span>   <span class="hljs-comment"># Session timeout</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8080</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">stateful-app</span>
+</div></code></pre>
+<h3 id="%F0%9F%8C%90-headless-services-no-clusterip"><strong>🌐 Headless Services (No ClusterIP):</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">headless-service</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">clusterIP:</span> <span class="hljs-string">None</span>  <span class="hljs-comment"># No cluster IP assigned</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>
+      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8080</span>
+  <span class="hljs-attr">selector:</span>
+    <span class="hljs-attr">app:</span> <span class="hljs-string">database</span>
+<span class="hljs-comment"># Use case: StatefulSets, direct pod access via DNS</span>
+</div></code></pre>
+<h2 id="%F0%9F%9B%A0%EF%B8%8F-troubleshooting-services">🛠️ <strong>Troubleshooting Services</strong></h2>
+<h3 id="%F0%9F%94%8D-common-debugging-commands"><strong>🔍 Common Debugging Commands:</strong></h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># Check service status</span>
+kubectl get svc
+kubectl describe svc 
+
+<span class="hljs-comment"># Check endpoints</span>
+kubectl get endpoints 
+kubectl describe endpoints 
+
+<span class="hljs-comment"># Check pod labels match service selector</span>
+kubectl get pods --show-labels
+kubectl get pods -l app=frontend
+
+<span class="hljs-comment"># Test service connectivity</span>
+kubectl run debug --image=busybox --rm -it -- sh
+<span class="hljs-comment"># Inside pod: wget -qO- http://service-name:port</span>
+
+<span class="hljs-comment"># Port forward for local testing</span>
+kubectl port-forward svc/my-service 8080:80
+</div></code></pre>
+<h3 id="%F0%9F%9A%A8-common-issues--solutions"><strong>🚨 Common Issues &amp; Solutions:</strong></h3>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Symptoms</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>No endpoints</strong></td>
+<td>Service exists but no pods behind it</td>
+<td>Check pod labels match service selector</td>
+</tr>
+<tr>
+<td><strong>Connection refused</strong></td>
+<td>Can't connect to service</td>
+<td>Verify targetPort matches pod's listening port</td>
+</tr>
+<tr>
+<td><strong>External IP pending</strong></td>
+<td>LoadBalancer shows ``</td>
+<td>Check cloud provider integration/credentials</td>
+</tr>
+<tr>
+<td><strong>NodePort not accessible</strong></td>
+<td>Can't reach via node IP:port</td>
+<td>Check firewall rules, security groups</td>
+</tr>
+<tr>
+<td><strong>DNS not resolving</strong></td>
+<td>Service name doesn't resolve</td>
+<td>Check CoreDNS pods, namespace spelling</td>
+</tr>
+</tbody>
+</table>
+<h2 id="%F0%9F%93%8A-service-types-comparison-table">📊 <strong>Service Types Comparison Table</strong></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>ClusterIP</th>
+<th>NodePort</th>
+<th>LoadBalancer</th>
+<th>ExternalName</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>External Access</strong></td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Load Balancing</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>Cloud Integration</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>Port Range</strong></td>
+<td>Any</td>
+<td>30000-32767</td>
+<td>Any</td>
+<td>Any</td>
+</tr>
+<tr>
+<td><strong>Production Ready</strong></td>
+<td>✅</td>
+<td>⚠️</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>SSL Termination</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ (cloud)</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td>Free</td>
+<td>Free</td>
+<td>Cloud charges</td>
+<td>Free</td>
+</tr>
+<tr>
+<td><strong>Use Case</strong></td>
+<td>Internal APIs</td>
+<td>Dev/Test</td>
+<td>Production web apps</td>
+<td>External services</td>
+</tr>
+</tbody>
+</table>
+<h2 id="%F0%9F%8E%AF-best-practices-summary">🎯 <strong>Best Practices Summary</strong></h2>
+<h3 id="%F0%9F%8F%97%EF%B8%8F-architecture"><strong>🏗️ Architecture:</strong></h3>
+<ul>
+<li>Use <strong>ClusterIP</strong> for internal service communication</li>
+<li>Use <strong>LoadBalancer</strong> for production external access</li>
+<li>Avoid <strong>NodePort</strong> in production (use Ingress instead)</li>
+<li>Use <strong>ExternalName</strong> for external service integration</li>
+</ul>
+<h3 id="%F0%9F%94%A7-configuration"><strong>🔧 Configuration:</strong></h3>
+<ul>
+<li>Always use meaningful service and port names</li>
+<li>Match service selectors with pod labels carefully</li>
+<li>Use health checks and readiness probes</li>
+<li>Consider session affinity for stateful applications</li>
+</ul>
+<h3 id="%F0%9F%94%92-security"><strong>🔒 Security:</strong></h3>
+<ul>
+<li>Restrict LoadBalancer source ranges when needed</li>
+<li>Use network policies to control service access</li>
+<li>Implement proper authentication/authorization</li>
+<li>Regular security scanning of exposed services</li>
+</ul>
+<h3 id="%F0%9F%93%88-monitoring"><strong>📈 Monitoring:</strong></h3>
+<ul>
+<li>Monitor service endpoints health</li>
+<li>Track service response times and errors</li>
+<li>Alert on service discovery issues</li>
+<li>Monitor cloud load balancer costs and usage</li>
+</ul>
+<h2 id="%F0%9F%8E%AF-exam-tips">🎯 <strong>Exam Tips</strong></h2>
+<p>✅ <strong>Know the port types</strong>: NodePort vs Port vs TargetPort<br>
+✅ <strong>Service selector</strong>: Must match pod labels exactly<br>
+✅ <strong>Default behavior</strong>: ClusterIP is default service type<br>
+✅ <strong>Imperative commands</strong>: <code>kubectl expose</code> for quick service creation<br>
+✅ <strong>Troubleshooting</strong>: Use <code>kubectl get endpoints</code> to verify pod selection<br>
+✅ <strong>DNS names</strong>: <code>service-name.namespace.svc.cluster.local</code></p>
+<p><strong>🚀 Practice all service types in your lab environment!</strong></p>
+
+</body>
+</html>
